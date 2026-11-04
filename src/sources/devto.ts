@@ -31,6 +31,8 @@ const source: Source = {
   id: 'devto',
   name: 'dev.to',
   code: 'DEV',
+  about:
+    "dev.to is a community blogging platform for software developers, built on the open-source Forem software. Its articles are written by members.",
   homepage: 'https://dev.to/top/day',
   hasScore: true,
   scoreLabel: 'reactions',

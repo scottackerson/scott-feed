@@ -57,7 +57,7 @@ The app holds **no state**: no accounts, cookies, local storage or database. All
 
 ## 5. Sources (v1)
 
-All sources are curated in code. Each is fetched **server-side only**, never from the browser.
+All sources are curated in code. Six were added after launch (Techmeme, r/LocalLLaMA, HF Daily Papers, Tildes, Simon Willison, The New Stack). Each is fetched **server-side only**, never from the browser.
 
 | ID | Source | Method | Native score | Discussion link | Notes / risk |
 |---|---|---|---|---|---|
@@ -69,6 +69,12 @@ All sources are curated in code. Each is fetched **server-side only**, never fro
 | `devto` | dev.to | `https://dev.to/api/articles?top=1` | reactions | ✅ | Free, reliable |
 | `bluesky` | Bluesky (tech feed) | Public AppView `app.bsky.feed.getFeed` on a curated tech feed | likes + reposts | ✅ (post) | Unauthenticated public API |
 | `mastodon` | Mastodon trending links | `mastodon.social/api/v1/trends/links` | shares (history) | ❌ | Free, public |
+| `techmeme` | Techmeme | RSS; original article URL taken from the description | — | ✅ (Techmeme page) | Editor-curated; Trending weight 0.7 |
+| `localllama` | r/LocalLLaMA | Subreddit `.rss` | — | ✅ | Same risks as `reddit` |
+| `hfpapers` | Hugging Face Daily Papers | `https://huggingface.co/api/daily_papers` (JSON) | upvotes | ✅ (HF page) | Links to arXiv; Trending weight 0.6 |
+| `tildes` | Tildes ~tech | Atom `https://tildes.net/~tech/topics.atom` | votes | ✅ | Small community, low volume |
+| `simonw` | Simon Willison's Weblog | Atom `https://simonwillison.net/atom/everything/` | — | ❌ | A few posts per day |
+| `newstack` | The New Stack | RSS | — | ❌ | Rank by recency |
 | `techcrunch` | TechCrunch | RSS | — | ❌ | Rank by recency |
 | `verge` | The Verge | RSS/Atom | — | ❌ | Rank by recency |
 | `ars` | Ars Technica | RSS | — | ❌ | Rank by recency |
@@ -83,7 +89,7 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 - **FR-2** Desktop (≥ 768px): a responsive grid of cards with independent vertical scrolling, or a fixed card height with internal scroll.
 - **FR-3** Mobile (< 768px): cards are full-width and swipeable horizontally using CSS scroll-snap, with a sticky row of source chips that jump to each card through anchor links. This must work without JavaScript.
 - **FR-4** Each card header shows the source name, a link to the source's homepage, and when the data was last refreshed (for example "updated 6 min ago").
-- **FR-4a** Each card header has an info button (ⓘ) that reveals, on click, a plain-language explanation of how that card is sorted. It uses native `<details>` so it works without JavaScript. Every source must provide this text (`Source.sortDescription`).
+- **FR-4a** Each card header has an info button (ⓘ) that reveals, on click, a short blurb about the source website (`Source.about`) and a plain-language explanation of how that card is sorted (`Source.sortDescription`). It uses native `<details>` so it works without JavaScript. Every source must provide both texts. The Trending card shows only its sort explanation.
 - **FR-5** Visual style is "Ticker": dense, terminal-flavored, dark by default, with a light variant that follows `prefers-color-scheme`. There is no toggle, because a toggle would need stored state. Fonts are system stacks only (no web fonts).
 
 ### 6.2 Items

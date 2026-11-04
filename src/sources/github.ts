@@ -34,6 +34,8 @@ const source: Source = {
   id: 'github',
   name: 'GitHub Trending',
   code: 'GH',
+  about:
+    "GitHub Trending is GitHub's daily list of the open-source repositories getting the most attention, largely measured by new stars.",
   homepage: 'https://github.com/trending',
   hasScore: true,
   undated: true,

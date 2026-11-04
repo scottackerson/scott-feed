@@ -32,6 +32,8 @@ const source: Source = {
   id: 'lobsters',
   name: 'Lobsters',
   code: 'LOB',
+  about:
+    "Lobsters is an invite-only, community-run link aggregator focused on computing, started in 2012. Every story is tagged by topic, and its moderation log is public.",
   homepage: 'https://lobste.rs/',
   hasScore: true,
   scoreLabel: 'pts',

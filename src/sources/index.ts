@@ -10,10 +10,32 @@ import hn from './hn';
 import lobsters from './lobsters';
 import mastodon from './mastodon';
 import producthunt from './producthunt';
-import { ars, techcrunch, verge } from './publishers';
-import reddit from './reddit';
+import hfpapers from './hfpapers';
+import { ars, newstack, techcrunch, verge } from './publishers';
+import reddit, { localllama } from './reddit';
+import simonw from './simonw';
+import techmeme from './techmeme';
+import tildes from './tildes';
 
-export const SOURCES: Source[] = [hn, lobsters, reddit, github, producthunt, devto, bluesky, mastodon, techcrunch, verge, ars];
+export const SOURCES: Source[] = [
+  hn,
+  lobsters,
+  techmeme,
+  reddit,
+  localllama,
+  github,
+  hfpapers,
+  producthunt,
+  devto,
+  tildes,
+  bluesky,
+  mastodon,
+  simonw,
+  techcrunch,
+  verge,
+  ars,
+  newstack,
+];
 
 export const TRENDING_ID = 'trending';
 

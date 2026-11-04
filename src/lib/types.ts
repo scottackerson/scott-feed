@@ -38,6 +38,11 @@ export interface Source {
    */
   trendingWeight?: number;
   /**
+   * One or two plain sentences about the source website itself, shown in the
+   * card's info box above the sort explanation. Required.
+   */
+  about: string;
+  /**
    * Plain-language explanation of how this card is ordered, shown behind the
    * card's info button. Required so every card can explain itself.
    */

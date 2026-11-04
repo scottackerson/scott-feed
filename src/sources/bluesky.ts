@@ -49,6 +49,8 @@ const source: Source = {
   id: 'bluesky',
   name: 'Bluesky',
   code: 'BSKY',
+  about:
+    "Bluesky is a decentralized social network built on the AT Protocol. This card reads \"Tech by Flipboard\", a public Bluesky feed of tech news links.",
   homepage: 'https://bsky.app/profile/did:plc:cndfx4udwgvpjaakvxvh7wm5/feed/flipboard-tech',
   hasScore: true,
   scoreLabel: 'likes+reposts',

@@ -16,7 +16,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- ⓘ button on every card explaining how it is sorted.
+- New sources: Techmeme, r/LocalLLaMA, Hugging Face Daily Papers, Tildes ~tech, Simon Willison's Weblog and The New Stack.
+- ⓘ button on every card with a short blurb about the source site and an explanation of how the card is sorted.
 
 ### Added
 

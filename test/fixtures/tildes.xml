@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>~tech</title>
+<entry>
+  <title><![CDATA[A tool for measuring real world objects]]></title>
+  <id>https://tildes.net/~tech/1wry/a_tool</id>
+  <link rel="alternate" href="https://www.example.com/watch?v=abc"/>
+  <content type="html"><![CDATA[
+    <p>Link URL: <a href="https://www.example.com/watch?v=abc">https://www.example.com/watch?v=abc</a></p>
+    <p>Comments URL: <a href="https://tildes.net/~tech/1wry/a_tool">https://tildes.net/~tech/1wry/a_tool</a></p>
+    <p>Votes: 12</p>
+    <p>Comments: 3</p>
+  ]]></content>
+  <updated>2026-11-04T19:31:51Z</updated>
+</entry>
+</feed>

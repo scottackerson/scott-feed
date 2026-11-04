@@ -27,6 +27,8 @@ const source: Source = {
   id: 'producthunt',
   name: 'Product Hunt',
   code: 'PH',
+  about:
+    "Product Hunt is a site where makers launch new products and apps, and the community upvotes and discusses them. It has been running since 2013.",
   homepage: 'https://www.producthunt.com/',
   hasScore: false,
   sortDescription: "Product Hunt's featured products in the order of its public feed. Vote counts aren't available in the feed.",

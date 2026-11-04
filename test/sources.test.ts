@@ -3,11 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { parse as bluesky } from '../src/sources/bluesky';
 import { parse as devto } from '../src/sources/devto';
 import { parse as github } from '../src/sources/github';
+import { parse as hfpapers } from '../src/sources/hfpapers';
 import { parse as hn } from '../src/sources/hn';
 import { parse as lobsters } from '../src/sources/lobsters';
 import { parse as mastodon } from '../src/sources/mastodon';
 import { parse as producthunt } from '../src/sources/producthunt';
-import { parse as reddit } from '../src/sources/reddit';
+import { localllama, parse as reddit } from '../src/sources/reddit';
+import { parse as techmeme } from '../src/sources/techmeme';
+import { parse as tildes } from '../src/sources/tildes';
 import { parseRss } from '../src/sources/rss';
 
 const fx = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');
@@ -88,5 +91,43 @@ describe('source parsers', () => {
   it('atom: uses alternate link and published date', () => {
     const [i] = parseRss(fx('atom.xml'), 'pub');
     expect(i).toMatchObject({ title: 'Atom headline', url: 'https://atom.example.com/one', publishedAt: '2026-11-04T15:00:00.000Z' });
+  });
+
+  it('reddit: tags items with the given card id', () => {
+    expect(reddit(fx('reddit.rss'), 'localllama')[0].source).toBe('localllama');
+    expect(localllama.homepage).toBe('https://www.reddit.com/r/LocalLLaMA/');
+    expect(localllama.sortDescription).toContain('r/LocalLLaMA');
+  });
+
+  it('techmeme: links the original article, strips the byline', () => {
+    const [i] = techmeme(fx('techmeme.xml'));
+    expect(i.title).toBe('Acme agrees to buy Widgetco for ~$2B in cash and stock');
+    expect(i.url).toBe('https://news.example.com/acme-widgetco?x=1&y=2');
+    expect(i.discussionUrl).toBe('https://www.techmeme.com/261104/p48#a261104p48');
+    expect(i.publishedAt).toBe('2026-11-04T19:45:48.000Z');
+  });
+
+  it('hfpapers: most upvoted first, arXiv link, HF discussion', () => {
+    const items = hfpapers(json('hfpapers.json'));
+    expect(items.map((i) => i.id)).toEqual(['2611.00002', '2611.00001']);
+    expect(items[0]).toMatchObject({
+      title: 'A Popular Paper',
+      url: 'https://arxiv.org/abs/2611.00002',
+      discussionUrl: 'https://huggingface.co/papers/2611.00002',
+      score: 40,
+      comments: 3,
+      publishedAt: '2026-11-04T00:00:00.000Z',
+    });
+  });
+
+  it('tildes: submitted link, comments URL, votes and comments', () => {
+    const [i] = tildes(fx('tildes.xml'));
+    expect(i).toMatchObject({
+      url: 'https://www.example.com/watch?v=abc',
+      discussionUrl: 'https://tildes.net/~tech/1wry/a_tool',
+      score: 12,
+      comments: 3,
+      publishedAt: '2026-11-04T19:31:51.000Z',
+    });
   });
 });

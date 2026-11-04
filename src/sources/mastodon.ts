@@ -28,6 +28,8 @@ const source: Source = {
   id: 'mastodon',
   name: 'Mastodon',
   code: 'MSTDN',
+  about:
+    "Mastodon is a decentralized, open-source social network made up of independently run servers, part of the wider \"fediverse\". This card shows links trending on mastodon.social, its largest server.",
   homepage: 'https://mastodon.social/explore/links',
   hasScore: true,
   scoreLabel: 'shares',

@@ -1,6 +1,6 @@
 # scott-feed
 
-A fast, no-tracking dashboard of what's trending in tech. Hacker News, Lobsters, Reddit, GitHub Trending, Product Hunt, dev.to, Bluesky, Mastodon, TechCrunch, The Verge and Ars Technica, all on one page.
+A fast, no-tracking dashboard of what's trending in tech and AI. Hacker News, Lobsters, Techmeme, Reddit, r/LocalLLaMA, GitHub Trending, Hugging Face Daily Papers, Product Hunt, dev.to, Tildes, Bluesky, Mastodon, Simon Willison, TechCrunch, The Verge, Ars Technica and The New Stack, all on one page.
 
 - **One card per source**, plus a **Trending** card that blends and dedupes the hottest stories across all of them.
 - **Stateless.** No accounts, cookies or local storage. Your configuration lives in the URL, so just bookmark it.
@@ -20,7 +20,7 @@ A fast, no-tracking dashboard of what's trending in tech. Hacker News, Lobsters,
 
 Example: `/?cards=trending,hn,github&n=15&n.trending=30`
 
-Source IDs: `trending`, `hn`, `lobsters`, `reddit`, `github`, `producthunt`, `devto`, `bluesky`, `mastodon`, `techcrunch`, `verge`, `ars`.
+Card IDs: `trending`, `hn`, `lobsters`, `techmeme`, `reddit`, `localllama`, `github`, `hfpapers`, `producthunt`, `devto`, `tildes`, `bluesky`, `mastodon`, `simonw`, `techcrunch`, `verge`, `ars`, `newstack`.
 
 ## Quick start
 

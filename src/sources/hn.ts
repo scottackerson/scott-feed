@@ -49,6 +49,8 @@ const source: Source = {
   id: 'hn',
   name: 'Hacker News',
   code: 'HN',
+  about:
+    "Hacker News is a social news site run by the startup accelerator Y Combinator since 2007. Members submit and upvote links about programming, startups and technology, and its comment threads are a big part of the draw.",
   homepage: 'https://news.ycombinator.com/',
   hasScore: true,
   scoreLabel: 'pts',
