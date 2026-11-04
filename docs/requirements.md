@@ -33,7 +33,7 @@ The app holds **no state**: no accounts, cookies, local storage or database. All
 - Thumbnails, images, AI summaries.
 - Save-for-later and read-state tracking. The browser's native `:visited` link styling is used instead, which needs no storage.
 - Offline mode.
-- Analytics or tracking scripts.
+- Third-party analytics or tracking scripts (first-party, cookieless Vercel Web Analytics is allowed; see NFR-5).
 
 ## 4. Users
 
@@ -164,7 +164,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 
 ### 7.3 Privacy
 
-- **NFR-5** No cookies, no client-side storage, no analytics, no third-party scripts or embeds.
+- **NFR-5** No cookies, no client-side storage, no third-party scripts or embeds. The one exception to "no analytics" is **Vercel Web Analytics**: cookieless, anonymous page-view counts, added with the `@vercel/analytics` Astro component and loaded from the site's own domain (`/_vercel/insights/*`) in production builds only. Scripts must never be inlined, because the CSP blocks inline scripts.
 - **NFR-6** No user data is collected or logged beyond Vercel's default request logs.
 
 ### 7.4 Accessibility

@@ -1,4 +1,5 @@
 ---
+import Analytics from '@vercel/analytics/astro';
 import Card from '../components/Card.astro';
 import Customize from '../components/Customize.astro';
 import { PAGE_CACHE_CONTROL } from '../lib/config';
@@ -46,6 +47,14 @@ const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/copy-link.js" defer is:inline></script>
+    {
+      /*
+       * Vercel Web Analytics (@vercel/analytics): cookieless, and the script
+       * and beacon are served from this domain, so the CSP's 'self' rules
+       * cover them. Production builds only; the endpoints exist only on Vercel.
+       */
+      import.meta.env.PROD && <Analytics />
+    }
   </head>
   <body>
     <header class="top">
@@ -63,7 +72,7 @@ const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`
       {cards.map((card) => <Card card={card} />)}
     </main>
     <footer>
-      {SOURCES.length} sources · no cookies · no tracking ·
+      {SOURCES.length} sources · no cookies · anonymous page-view stats only ·
       <a href="https://github.com/scottackerson/scott-feed" target="_blank" rel="noopener noreferrer">github</a>
     </footer>
   </body>

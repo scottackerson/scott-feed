@@ -1,9 +1,10 @@
 # scott-feed
 
-A fast, no-tracking dashboard of what's trending in tech and AI. Hacker News, Lobsters, Techmeme, Reddit, r/LocalLLaMA, GitHub Trending, Hugging Face Daily Papers, Product Hunt, dev.to, Tildes, Bluesky, Mastodon, Simon Willison, TechCrunch, The Verge, Ars Technica and The New Stack, all on one page.
+A fast, cookie-free dashboard of what's trending in tech and AI. Hacker News, Lobsters, Techmeme, Reddit, r/LocalLLaMA, GitHub Trending, Hugging Face Daily Papers, Product Hunt, dev.to, Tildes, Bluesky, Mastodon, Simon Willison, TechCrunch, The Verge, Ars Technica and The New Stack, all on one page.
 
 - **One card per source**, plus a **Trending** card that blends and dedupes the hottest stories across all of them.
 - **Stateless.** No accounts, cookies or local storage. Your configuration lives in the URL, so just bookmark it.
+- **Private.** No cookies or personal data. The only analytics is Vercel Web Analytics: anonymous, cookieless page-view counts served from the site's own domain.
 - **Light.** Server-rendered, works without JavaScript, under 15 KB of client JS, zero third-party requests.
 - **Mobile-friendly.** Swipe between cards, and add it to your home screen.
 
