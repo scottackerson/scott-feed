@@ -30,6 +30,7 @@ const source: Source = {
   homepage: 'https://mastodon.social/explore/links',
   hasScore: true,
   scoreLabel: 'shares',
+  sortDescription: "mastodon.social's trending links, ranked by how widely each link is being shared across the fediverse. Not limited to tech.",
   // Fediverse trends skew toward general news, not just tech.
   trendingWeight: 0.4,
   fetch: async () => parse(await getJson('https://mastodon.social/api/v1/trends/links?limit=40')),

@@ -32,6 +32,7 @@ const source: Source = {
   name: 'Reddit',
   homepage: `https://www.reddit.com/r/${SUBREDDITS.join('+')}/`,
   hasScore: false,
+  sortDescription: "Reddit's \"hot\" order across r/programming, r/technology, r/webdev and r/MachineLearning combined. Vote counts aren't available in Reddit's feed.",
   fetch: async () => parse(await getText(`https://www.reddit.com/r/${SUBREDDITS.join('+')}/.rss?limit=50`)),
 };
 export default source;

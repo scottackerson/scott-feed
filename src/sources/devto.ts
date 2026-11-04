@@ -33,6 +33,7 @@ const source: Source = {
   homepage: 'https://dev.to/top/day',
   hasScore: true,
   scoreLabel: 'reactions',
+  sortDescription: "dev.to's \"top of the day\" ranking of articles from the last 24 hours.",
   // Every article is from the last day, so it would otherwise crowd Trending.
   trendingWeight: 0.6,
   fetch: async () => parse(await getJson('https://dev.to/api/articles?top=1&per_page=50')),

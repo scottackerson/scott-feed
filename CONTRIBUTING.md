@@ -22,10 +22,11 @@ Tests run offline against fixtures in `test/fixtures/`. Keep fixtures small and 
 ## Adding a source
 
 1. Create `src/sources/<id>.ts` exporting a `parse()` function and a default `Source` (see `src/lib/types.ts` and any existing source). Plain RSS feeds can use `rssSource()` in `src/sources/publishers.ts`.
-2. Add a header comment with the endpoint, terms-of-use notes and rate limits.
-3. Save a sample response under `test/fixtures/<id>.*` and add a parser test.
-4. Register the source in `src/sources/index.ts`.
-5. Add its ID to the README.
+2. Write a `sortDescription` explaining, in plain language, how the card is ordered (shown behind the card's ⓘ button).
+3. Add a header comment with the endpoint, terms-of-use notes and rate limits.
+4. Save a sample response under `test/fixtures/<id>.*` and add a parser test.
+5. Register the source in `src/sources/index.ts`.
+6. Add its ID to the README.
 
 ## Pull request checklist
 

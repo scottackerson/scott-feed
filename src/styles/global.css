@@ -88,10 +88,27 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 }
 .card header {
   position: sticky; top: 0;
-  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  display: flex; align-items: center; gap: 6px; z-index: 1;
   padding: 10px 12px; background: var(--card); border-bottom: 1px solid var(--border);
 }
 .card h2 { font-size: 1rem; margin: 0; }
+.card header time { margin-left: auto; }
+
+/* "How this card is sorted" toggle. Native <details>, so it works without JS. */
+.info summary {
+  display: flex; align-items: center; padding: 2px;
+  list-style: none; cursor: pointer; color: var(--muted); border-radius: 50%;
+}
+.info summary::-webkit-details-marker { display: none; }
+.info summary:hover, .info[open] summary { color: var(--accent); }
+.info p {
+  /* Drops down under the header, full card width, over the list. */
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 2;
+  margin: 0; padding: 10px 12px;
+  background: var(--card); border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 0.12);
+  font-size: 0.85rem; color: var(--text);
+}
 .card h2 a { text-decoration: none; }
 .card time, .notice { color: var(--muted); font-size: 0.8rem; }
 .notice { padding: 0 12px; }

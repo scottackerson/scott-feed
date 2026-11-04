@@ -21,6 +21,7 @@ export function rssSource(id: string, name: string, homepage: string, feedUrl: s
     name,
     homepage,
     hasScore: false,
+    sortDescription: `Newest first, as listed in ${name}'s RSS feed.`,
     fetch: async () => parseRss(await getText(feedUrl, 'application/rss+xml, application/atom+xml, application/xml'), id),
   };
 }

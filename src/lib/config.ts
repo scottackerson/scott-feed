@@ -25,3 +25,10 @@ export const TRENDING = {
   /** Age assumed for items from undated sources. */
   undatedAgeHours: 12,
 } as const;
+
+/** Shown behind the Trending card's info button; generated from TRENDING so it stays accurate. */
+export const TRENDING_SORT_DESCRIPTION =
+  "Blends the visible cards into one list. Each story's rank within its own source becomes a 0–1 score, " +
+  `multiplied by a source weight (${TRENDING.unscoredWeight} for RSS feeds without votes, lower for some noisy sources) ` +
+  `and reduced as it ages (a ${TRENDING.decayHours}-hour-old story counts half as much). ` +
+  `Stories on several sources are merged into one entry and get a ${TRENDING.crossSourceBoost * 100}% boost for each extra source.`;

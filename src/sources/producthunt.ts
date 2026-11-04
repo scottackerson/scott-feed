@@ -28,6 +28,7 @@ const source: Source = {
   name: 'Product Hunt',
   homepage: 'https://www.producthunt.com/',
   hasScore: false,
+  sortDescription: "Product Hunt's featured products in the order of its public feed. Vote counts aren't available in the feed.",
   fetch: async () => parse(await getText('https://www.producthunt.com/feed')),
 };
 export default source;

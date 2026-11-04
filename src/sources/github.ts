@@ -37,6 +37,7 @@ const source: Source = {
   hasScore: true,
   undated: true,
   scoreLabel: 'stars today',
+  sortDescription: "Same order as GitHub's Trending page for today. GitHub doesn't publish how it ranks, but stars gained today are a big factor.",
   fetch: async () => parse(await getText('https://github.com/trending')),
 };
 export default source;

@@ -14,9 +14,14 @@ const fx = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.m
 const json = (name: string) => JSON.parse(fx(name));
 
 describe('source parsers', () => {
-  it('hn: sorts by points, falls back to HN link for Ask HN', () => {
+  it('hn: follows the front-page rank order when given', () => {
+    // Story 3 isn't in the ranked list, so it goes last.
+    expect(hn(json('hn.json'), [1, 2]).map((i) => i.id)).toEqual(['1', '2', '3']);
+  });
+
+  it('hn: falls back to points order, and to the HN link for Ask HN', () => {
     const items = hn(json('hn.json'));
-    expect(items.map((i) => i.id)).toEqual(['2', '1']);
+    expect(items.map((i) => i.id)).toEqual(['2', '1', '3']);
     expect(items[0].url).toBe('https://news.ycombinator.com/item?id=2');
     expect(items[0]).toMatchObject({ score: 500, comments: 200, source: 'hn' });
   });

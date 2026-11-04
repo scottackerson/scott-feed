@@ -1,5 +1,6 @@
 ---
 import type { CardData } from '../lib/dashboard';
+import { TRENDING_SORT_DESCRIPTION } from '../lib/config';
 import { relativeAge } from '../lib/time';
 import ItemRow from './ItemRow.astro';
 
@@ -11,6 +12,7 @@ const { card } = Astro.props;
 const isTrending = card.kind === 'trending';
 const name = isTrending ? 'Trending' : card.result.source.name;
 const homepage = isTrending ? undefined : card.result.source.homepage;
+const sortDescription = isTrending ? TRENDING_SORT_DESCRIPTION : card.result.source.sortDescription;
 const fetchedAt = isTrending ? card.fetchedAt : card.result.fetchedAt;
 const status = isTrending ? 'ok' : card.result.status;
 const headingId = `h-${card.id}`;
@@ -23,6 +25,17 @@ const updated = ago === 'now' ? 'updated just now' : `updated ${ago} ago`;
     <h2 id={headingId}>
       {homepage ? <a href={homepage} target="_blank" rel="noopener noreferrer">{name}</a> : name}
     </h2>
+    <details class="info">
+      <summary title="How this card is sorted">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+          <rect x="7.25" y="7" width="1.5" height="5" rx=".75" fill="currentColor"></rect>
+          <circle cx="8" cy="4.75" r="1" fill="currentColor"></circle>
+        </svg>
+        <span class="sr-only">How {name} is sorted</span>
+      </summary>
+      <p><strong>How this card is sorted:</strong> {sortDescription}</p>
+    </details>
     {fetchedAt && <time datetime={new Date(fetchedAt).toISOString()}>{updated}</time>}
   </header>
 

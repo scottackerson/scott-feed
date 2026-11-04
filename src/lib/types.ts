@@ -35,6 +35,11 @@ export interface Source {
    * TRENDING.unscoredWeight otherwise). Lower it for noisy sources.
    */
   trendingWeight?: number;
+  /**
+   * Plain-language explanation of how this card is ordered, shown behind the
+   * card's info button. Required so every card can explain itself.
+   */
+  sortDescription: string;
   /** Label for the score, e.g. "points". */
   scoreLabel?: string;
   /** Fetch items in the source's native order. Throw on failure. */

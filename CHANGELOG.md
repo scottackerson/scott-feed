@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Changed
+
+- Hacker News card now matches the real front-page order (via the official `topstories.json`), falling back to points order.
+
+### Added
+
+- ⓘ button on every card explaining how it is sorted.
+
 ### Added
 
 - Initial dashboard: Trending card plus cards for Hacker News, Lobsters, Reddit, GitHub Trending, Product Hunt, dev.to, Bluesky, Mastodon, TechCrunch, The Verge and Ars Technica.

@@ -34,6 +34,7 @@ const source: Source = {
   homepage: 'https://lobste.rs/',
   hasScore: true,
   scoreLabel: 'points',
+  sortDescription: "Same order as Lobsters' \"hottest\" page, which balances votes, comments and age.",
   fetch: async () => parse(await getJson('https://lobste.rs/hottest.json')),
 };
 export default source;
