@@ -33,10 +33,11 @@ export function parse(html: string, now = new Date()): Item[] {
 const source: Source = {
   id: 'github',
   name: 'GitHub Trending',
+  code: 'GH',
   homepage: 'https://github.com/trending',
   hasScore: true,
   undated: true,
-  scoreLabel: 'stars today',
+  scoreLabel: '★ today',
   sortDescription: "Same order as GitHub's Trending page for today. GitHub doesn't publish how it ranks, but stars gained today are a big factor.",
   fetch: async () => parse(await getText('https://github.com/trending')),
 };

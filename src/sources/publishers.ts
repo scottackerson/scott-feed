@@ -4,11 +4,12 @@
  */
 import { rssSource } from './rss';
 
-export const techcrunch = rssSource('techcrunch', 'TechCrunch', 'https://techcrunch.com/', 'https://techcrunch.com/feed/');
-export const verge = rssSource('verge', 'The Verge', 'https://www.theverge.com/', 'https://www.theverge.com/rss/index.xml');
+export const techcrunch = rssSource('techcrunch', 'TechCrunch', 'TC', 'https://techcrunch.com/', 'https://techcrunch.com/feed/');
+export const verge = rssSource('verge', 'The Verge', 'VRG', 'https://www.theverge.com/', 'https://www.theverge.com/rss/index.xml');
 export const ars = rssSource(
   'ars',
   'Ars Technica',
+  'ARS',
   'https://arstechnica.com/',
   'https://feeds.arstechnica.com/arstechnica/index',
 );

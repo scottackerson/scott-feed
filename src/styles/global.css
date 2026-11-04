@@ -1,28 +1,47 @@
-/* Skeleton styles for v1. A proper visual design comes later. */
+/*
+ * "Ticker" — dense, terminal-flavored dashboard.
+ * Dark by default; a light variant follows prefers-color-scheme.
+ * System fonts only (no web fonts, no third-party requests).
+ */
 
 :root {
-  --bg: #f7f7f5;
-  --card: #ffffff;
-  --text: #1a1a1a;
-  --muted: #5c5c5c;
-  --border: #e2e2de;
-  --link: #1a1a1a;
-  --visited: #6b5e8a;
-  --accent: #b4430f;
-  --gap: 16px;
-  color-scheme: light dark;
+  --bg: #0d0f12;
+  --panel: #14171c;
+  --line: #262b33;
+  --line-soft: #1f232a;
+  --text: #e6e8eb;
+  --muted: #8b939e;
+  --rank: #7f8792;
+  --visited: #a9a1c9;
+  --accent: #f5a524;
+  --accent-text: #f5a524; /* accent used as text */
+  --on-accent: #0d0f12;
+  --control: #1a1e24;
+  --control-line: #2f353e;
+  --shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --gutter: 24px;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --bg: #151515;
-    --card: #1f1f1f;
-    --text: #ececec;
-    --muted: #a3a3a3;
-    --border: #333333;
-    --link: #ececec;
-    --visited: #a99bd1;
-    --accent: #ff8a4c;
+    --bg: #eef0f3;
+    --panel: #ffffff;
+    --line: #d9dde3;
+    --line-soft: #eceef2;
+    --text: #111418;
+    --muted: #57606a;
+    --rank: #6a737d;
+    --visited: #6b5e8a;
+    --accent: #f5a524;
+    --accent-text: #9a5b00;
+    --on-accent: #111418;
+    --control: #f4f5f7;
+    --control-line: #cfd4db;
+    --shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    color-scheme: light;
   }
 }
 
@@ -32,117 +51,165 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font: 14px/1.4 var(--sans);
+  -webkit-text-size-adjust: 100%;
 }
 
-a { color: var(--link); }
-a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 
-/* Top bar */
+/* ---------- Top bar ---------- */
 .top {
-  position: sticky; top: 0; z-index: 1;
-  display: flex; align-items: center; gap: var(--gap);
-  padding: 8px var(--gap);
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap;
+  padding: 0 var(--gutter); min-height: 52px;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
 }
-.top h1 { font-size: 1rem; margin: 0; white-space: nowrap; }
-.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.top h1 { margin: 0; font: 700 15px/1 var(--mono); letter-spacing: -0.02em; white-space: nowrap; }
+.top h1 a:hover { text-decoration: none; }
+.caret { color: var(--accent-text); }
+
+.chips {
+  display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none;
+  flex: 1 1 300px; min-width: 0; /* min-width:0 lets it shrink and scroll instead of widening the page */
+}
+.chips::-webkit-scrollbar { display: none; }
 .chips a {
-  flex: none; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px;
-  text-decoration: none; font-size: 0.85rem; color: var(--muted);
+  flex: none; font: 12px/1 var(--mono); color: var(--muted);
+  padding: 8px 10px; border-radius: 4px; white-space: nowrap;
 }
+.chips a:hover { color: var(--text); background: var(--control); text-decoration: none; }
 
-/* Customize */
-.customize { padding: 8px var(--gap); }
-.customize summary { cursor: pointer; color: var(--muted); }
-.customize form { margin-top: 8px; max-width: 560px; }
-.customize .row { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; margin: 8px 0; }
-.customize table { border-collapse: collapse; width: 100%; }
-.customize th, .customize td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border); }
-.customize input[type='number'] { width: 4.5em; }
-.hint { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.status { display: flex; gap: 14px; font: 12px/1 var(--mono); color: var(--muted); white-space: nowrap; }
 
-/* Cards: grid on desktop */
+/* ---------- Customize (dropdown from the top bar) ---------- */
+.customize summary {
+  list-style: none; cursor: pointer;
+  font: 700 12px/1 var(--mono); color: var(--on-accent); background: var(--accent);
+  padding: 9px 12px; border-radius: 4px; white-space: nowrap;
+}
+.customize summary::-webkit-details-marker { display: none; }
+.customize .panel {
+  position: absolute; right: var(--gutter); top: calc(100% + 6px); z-index: 20;
+  width: min(560px, calc(100vw - 2 * var(--gutter)));
+  max-height: calc(100vh - 80px); overflow: auto;
+  padding: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+.panel .hint { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+.panel .row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin: 12px 0; font-size: 13px; }
+.panel label { display: inline-flex; align-items: center; gap: 8px; }
+.panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.panel th { text-align: left; font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 8px 6px; }
+.panel td { padding: 6px; border-top: 1px solid var(--line-soft); }
+.panel input[type='number'], .panel select {
+  font: 13px var(--mono); color: var(--text); background: var(--control);
+  border: 1px solid var(--control-line); border-radius: 4px; padding: 5px 6px;
+}
+.panel input[type='number'] { width: 4.5em; }
+.panel input[type='checkbox'] { width: 16px; height: 16px; accent-color: var(--accent); }
+.panel button, .panel .row a {
+  font: 700 12px/1 var(--mono); padding: 9px 12px; border-radius: 4px; cursor: pointer;
+  border: 1px solid var(--control-line); background: var(--control); color: var(--text);
+}
+.panel button[type='submit'] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+/* ---------- Cards ---------- */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: var(--gap);
-  padding: var(--gap);
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1px;
+  background: var(--line); /* 1px gaps draw hairlines between panels */
+  border-bottom: 1px solid var(--line);
 }
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  max-height: 80vh;
-  overflow-y: auto;
-  scroll-margin-top: 56px;
+  background: var(--panel);
+  min-width: 0;
+  scroll-margin-top: 60px;
+  /* Contain absolutely positioned children (e.g. .sr-only labels) so they're
+     clipped by the card. Without this, on mobile they escape the horizontal
+     card scroller and widen the whole page. */
+  position: relative;
 }
-.card header {
-  position: sticky; top: 0;
-  display: flex; align-items: center; gap: 6px; z-index: 1;
-  padding: 10px 12px; background: var(--card); border-bottom: 1px solid var(--border);
+.card > header {
+  position: relative;
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--line-soft);
 }
-.card h2 { font-size: 1rem; margin: 0; }
-.card header time { margin-left: auto; }
+.card h2 {
+  margin: 0; font: 700 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.card.hot h2 { color: var(--accent-text); }
+.card > header time { margin-left: auto; font: 11px/1 var(--mono); color: var(--muted); }
+.notice { margin: 0; padding: 12px 16px; color: var(--muted); font: 12px/1.4 var(--mono); }
 
-/* "How this card is sorted" toggle. Native <details>, so it works without JS. */
+/* "How this card is sorted" — native <details>, works without JS. */
 .info summary {
-  display: flex; align-items: center; padding: 2px;
-  list-style: none; cursor: pointer; color: var(--muted); border-radius: 50%;
+  display: flex; padding: 4px; list-style: none; cursor: pointer; color: var(--muted); border-radius: 50%;
 }
 .info summary::-webkit-details-marker { display: none; }
-.info summary:hover, .info[open] summary { color: var(--accent); }
+.info summary:hover, .info[open] summary { color: var(--accent-text); }
 .info p {
-  /* Drops down under the header, full card width, over the list. */
-  position: absolute; left: 0; right: 0; top: 100%; z-index: 2;
-  margin: 0; padding: 10px 12px;
-  background: var(--card); border-bottom: 1px solid var(--border);
-  box-shadow: 0 6px 12px rgb(0 0 0 / 0.12);
-  font-size: 0.85rem; color: var(--text);
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 5;
+  margin: 0; padding: 12px 16px;
+  background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+  font-size: 13px; color: var(--text);
 }
-.card h2 a { text-decoration: none; }
-.card time, .notice { color: var(--muted); font-size: 0.8rem; }
-.notice { padding: 0 12px; }
-.card ol { list-style: none; margin: 0; padding: 0; }
 
-.item { padding: 8px 12px; border-bottom: 1px solid var(--border); }
-.item:last-child { border-bottom: 0; }
-.item .title { text-decoration: none; font-weight: 500; }
+.card ol { list-style: none; margin: 0; padding: 4px 0 8px; }
+
+.item {
+  display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 10px;
+  padding: 7px 16px;
+}
+.rank { font: 12px/1.6 var(--mono); color: var(--rank); text-align: right; }
+.item .title {
+  font-weight: 500; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
 .item .title:visited { color: var(--visited); }
-.item .title:hover { text-decoration: underline; }
-.meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 2px; font-size: 0.8rem; color: var(--muted); }
-.meta a { color: var(--muted); }
-.badge { padding: 0 6px; border: 1px solid var(--border); border-radius: 4px; text-decoration: none; }
+.meta {
+  display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 3px;
+  font: 11px/1.5 var(--mono); color: var(--muted);
+}
+.meta a:hover { color: var(--text); }
+.badges { display: inline-flex; gap: 4px; }
+.badge { color: var(--muted); }
 
-footer { padding: var(--gap); text-align: center; font-size: 0.8rem; }
-footer a { color: var(--muted); }
+footer { padding: 16px var(--gutter) 24px; font: 11px/1.5 var(--mono); color: var(--muted); }
+footer a { text-decoration: underline; }
 
-/* Mobile: one card per screen, swipe sideways (CSS scroll-snap, no JS). */
+/* ---------- Phone: one card per screen, swipe sideways (CSS scroll-snap, no JS) ---------- */
 @media (max-width: 767px) {
+  :root { --gutter: 16px; }
+  body { font-size: 15px; }
+  .top { padding-top: 10px; padding-bottom: 6px; }
+  .status { display: none; }
+  .customize { margin-left: auto; }
+  .customize summary { padding: 0 12px; height: 40px; display: flex; align-items: center; }
+  .chips { order: 3; flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
+  .chips a { padding: 10px 12px; background: var(--control); }
+
   .cards {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: var(--gap) 0;
+    overscroll-behavior-x: contain;
     gap: 0;
+    background: none;
+    border-bottom: 0;
   }
-  .card {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    max-height: none;
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
-  }
+  .card { flex: 0 0 100%; scroll-snap-align: start; }
+  .item { padding: 10px 16px; border-bottom: 1px solid var(--line-soft); }
+  .item .title { font-size: 15px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {

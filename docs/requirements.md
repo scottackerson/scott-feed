@@ -84,7 +84,7 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 - **FR-3** Mobile (< 768px): cards are full-width and swipeable horizontally using CSS scroll-snap, with a sticky row of source chips that jump to each card through anchor links. This must work without JavaScript.
 - **FR-4** Each card header shows the source name, a link to the source's homepage, and when the data was last refreshed (for example "updated 6 min ago").
 - **FR-4a** Each card header has an info button (ⓘ) that reveals, on click, a plain-language explanation of how that card is sorted. It uses native `<details>` so it works without JavaScript. Every source must provide this text (`Source.sortDescription`).
-- **FR-5** Light and dark themes follow `prefers-color-scheme`. There is no toggle, because a toggle would need stored state.
+- **FR-5** Visual style is "Ticker": dense, terminal-flavored, dark by default, with a light variant that follows `prefers-color-scheme`. There is no toggle, because a toggle would need stored state. Fonts are system stacks only (no web fonts).
 
 ### 6.2 Items
 

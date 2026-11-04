@@ -15,10 +15,11 @@ export function parseRss(xml: string, sourceId: string): Item[] {
   }));
 }
 
-export function rssSource(id: string, name: string, homepage: string, feedUrl: string): Source {
+export function rssSource(id: string, name: string, code: string, homepage: string, feedUrl: string): Source {
   return {
     id,
     name,
+    code,
     homepage,
     hasScore: false,
     sortDescription: `Newest first, as listed in ${name}'s RSS feed.`,

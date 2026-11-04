@@ -26,6 +26,7 @@ export function parse(xml: string): Item[] {
 const source: Source = {
   id: 'producthunt',
   name: 'Product Hunt',
+  code: 'PH',
   homepage: 'https://www.producthunt.com/',
   hasScore: false,
   sortDescription: "Product Hunt's featured products in the order of its public feed. Vote counts aren't available in the feed.",

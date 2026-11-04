@@ -48,9 +48,10 @@ export function parse(data: { hits?: Hit[] }, rankedIds?: number[]): Item[] {
 const source: Source = {
   id: 'hn',
   name: 'Hacker News',
+  code: 'HN',
   homepage: 'https://news.ycombinator.com/',
   hasScore: true,
-  scoreLabel: 'points',
+  scoreLabel: 'pts',
   sortDescription:
     "Same order as the Hacker News front page, which balances points against age. Falls back to most points first if HN's ranking can't be fetched.",
   fetch: async () => {

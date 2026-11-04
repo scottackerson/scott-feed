@@ -22,6 +22,8 @@ export interface Source {
   id: string;
   /** Display name, e.g. "Hacker News". */
   name: string;
+  /** Short uppercase code for compact UI (nav chips, Trending badges), e.g. "HN". */
+  code: string;
   homepage: string;
   /** Whether items carry a native popularity score. */
   hasScore: boolean;

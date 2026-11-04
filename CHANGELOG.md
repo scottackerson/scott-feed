@@ -7,7 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- New "Ticker" look: dense, dark-first layout with monospace labels, numbered rows, short source codes and a light variant that follows the system theme. Customize moved into a dropdown in the top bar.
 - Hacker News card now matches the real front-page order (via the official `topstories.json`), falling back to points order.
+
+### Fixed
+
+- On phones the whole page could scroll sideways: hidden screen-reader labels escaped the card strip and widened the page.
 
 ### Added
 

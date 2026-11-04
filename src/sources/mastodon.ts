@@ -27,6 +27,7 @@ export function parse(data: Link[]): Item[] {
 const source: Source = {
   id: 'mastodon',
   name: 'Mastodon',
+  code: 'MSTDN',
   homepage: 'https://mastodon.social/explore/links',
   hasScore: true,
   scoreLabel: 'shares',

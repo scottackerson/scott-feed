@@ -31,9 +31,10 @@ export function parse(data: Story[]): Item[] {
 const source: Source = {
   id: 'lobsters',
   name: 'Lobsters',
+  code: 'LOB',
   homepage: 'https://lobste.rs/',
   hasScore: true,
-  scoreLabel: 'points',
+  scoreLabel: 'pts',
   sortDescription: "Same order as Lobsters' \"hottest\" page, which balances votes, comments and age.",
   fetch: async () => parse(await getJson('https://lobste.rs/hottest.json')),
 };

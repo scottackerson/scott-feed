@@ -30,6 +30,7 @@ export function parse(data: Article[]): Item[] {
 const source: Source = {
   id: 'devto',
   name: 'dev.to',
+  code: 'DEV',
   homepage: 'https://dev.to/top/day',
   hasScore: true,
   scoreLabel: 'reactions',

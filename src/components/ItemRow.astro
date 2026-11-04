@@ -6,52 +6,54 @@ import { SOURCE_BY_ID } from '../sources';
 
 interface Props {
   item: Item;
+  rank: number;
   /** For Trending: every source this story appeared on. */
   appearances?: Item[];
   scoreLabel?: string;
 }
 
-const { item, appearances, scoreLabel = 'points' } = Astro.props;
+const { item, rank, appearances, scoreLabel = 'pts' } = Astro.props;
 const domain = domainOf(item.url);
 const age = SOURCE_BY_ID.get(item.source)?.undated ? '' : relativeAge(item.publishedAt);
 const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
 ---
 
 <li class="item">
-  <a class="title" href={item.url} target="_blank" rel="noopener noreferrer">
-    {item.title}<span class="sr-only"> (opens in new tab)</span>
-  </a>
-  <div class="meta">
-    {domain && <span>{domain}</span>}
-    {age && <span>{age}</span>}
-    {
-      appearances ? (
-        appearances.map((a) => {
-          const name = SOURCE_BY_ID.get(a.source)?.name ?? a.source;
-          return a.discussionUrl ? (
-            <a class="badge" href={a.discussionUrl} target="_blank" rel="noopener noreferrer">
-              {name}
-              <span class="sr-only"> discussion (opens in new tab)</span>
-            </a>
-          ) : (
-            <span class="badge">{name}</span>
-          );
-        })
-      ) : (
-        <>
-          {item.score !== undefined && (
-            <span>
-              {item.score.toLocaleString('en-US')} {scoreLabel}
-            </span>
-          )}
-          {item.discussionUrl && (
-            <a href={item.discussionUrl} target="_blank" rel="noopener noreferrer">
-              {item.comments !== undefined ? plural(item.comments, 'comment') : 'discuss'}
-              <span class="sr-only"> (opens in new tab)</span>
-            </a>
-          )}
-        </>
-      )
-    }
+  <span class="rank" aria-hidden="true">{String(rank).padStart(2, '0')}</span>
+  <div class="body">
+    <a class="title" href={item.url} target="_blank" rel="noopener noreferrer">
+      {item.title}<span class="sr-only"> (opens in new tab)</span>
+    </a>
+    <div class="meta">
+      {domain && <span>{domain}</span>}
+      {age && <span>{age}</span>}
+      {
+        appearances ? (
+          <span class="badges">
+            {appearances.map((a) => {
+              const src = SOURCE_BY_ID.get(a.source);
+              const code = src?.code ?? a.source;
+              return a.discussionUrl ? (
+                <a class="badge" href={a.discussionUrl} target="_blank" rel="noopener noreferrer" title={`Discussion on ${src?.name}`}>
+                  [{code}]<span class="sr-only"> {src?.name} discussion (opens in new tab)</span>
+                </a>
+              ) : (
+                <span class="badge" title={src?.name}>[{code}]</span>
+              );
+            })}
+          </span>
+        ) : (
+          <>
+            {item.score !== undefined && <span>{item.score.toLocaleString('en-US')} {scoreLabel}</span>}
+            {item.discussionUrl && (
+              <a href={item.discussionUrl} target="_blank" rel="noopener noreferrer">
+                {item.comments !== undefined ? plural(item.comments, 'comment') : 'discuss'}
+                <span class="sr-only"> (opens in new tab)</span>
+              </a>
+            )}
+          </>
+        )
+      }
+    </div>
   </div>
 </li>

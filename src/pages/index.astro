@@ -4,7 +4,8 @@ import Customize from '../components/Customize.astro';
 import { PAGE_CACHE_CONTROL } from '../lib/config';
 import { loadDashboard } from '../lib/dashboard';
 import { parseForm, parseParams, toQuery } from '../lib/params';
-import { ALL_CARDS, SOURCE_BY_ID, TRENDING_ID } from '../sources';
+import { relativeAge } from '../lib/time';
+import { ALL_CARDS, SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
 import '../styles/global.css';
 
 const params = Astro.url.searchParams;
@@ -20,7 +21,16 @@ const cards = await loadDashboard(cfg);
 
 Astro.response.headers.set('Cache-Control', PAGE_CACHE_CONTROL);
 
+const codeOf = (id: string) => (id === TRENDING_ID ? '★ TRENDING' : (SOURCE_BY_ID.get(id)?.code ?? id));
 const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.get(id)?.name ?? id));
+
+// Page-level freshness: the oldest data on the page.
+const times = cards
+  .map((c) => (c.kind === 'trending' ? c.fetchedAt : c.result.fetchedAt))
+  .filter((t): t is number => t !== undefined);
+const oldest = times.length ? Math.min(...times) : undefined;
+const ago = oldest ? relativeAge(oldest) : '';
+const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`) : '';
 ---
 
 <!doctype html>
@@ -31,25 +41,30 @@ const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.
     <title>scott-feed: trending tech news</title>
     <meta name="description" content="A fast, stateless dashboard of what's trending in tech." />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#151515" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0f12" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/copy-link.js" defer is:inline></script>
   </head>
   <body>
     <header class="top">
-      <h1>scott-feed</h1>
-      <nav aria-label="Cards" class="chips">
-        {cards.map((c) => <a href={`#${c.id}`}>{nameOf(c.id)}</a>)}
+      <h1><a href="/">scott-feed<span class="caret" aria-hidden="true">_</span></a></h1>
+      <nav aria-label="Jump to card" class="chips">
+        {cards.map((c) => <a href={`#${c.id}`} aria-label={nameOf(c.id)}>{codeOf(c.id)}</a>)}
       </nav>
+      <div class="status">
+        {updated && <span>{updated}</span>}
+        <span>window: {cfg.window}</span>
+      </div>
+      <Customize cfg={cfg} />
     </header>
-    <Customize cfg={cfg} />
     <main class="cards">
       {cards.map((card) => <Card card={card} />)}
     </main>
     <footer>
-      <a href="https://github.com/scottackerson/scott-feed" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+      {SOURCES.length} sources · no cookies · no tracking ·
+      <a href="https://github.com/scottackerson/scott-feed" target="_blank" rel="noopener noreferrer">github</a>
     </footer>
   </body>
 </html>
