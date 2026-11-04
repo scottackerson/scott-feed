@@ -1,0 +1,4 @@
+{"feed":[
+ {"post":{"uri":"at://did:plc:x/app.bsky.feed.post/rkey1","author":{"handle":"news.example.com"},"record":{"createdAt":"2026-11-04T15:09:22Z"},"embed":{"external":{"uri":"https://example.com/story?utm_source=bsky&id=7","title":"Linked story"}},"likeCount":10,"repostCount":5,"replyCount":2,"indexedAt":"2026-11-04T15:09:23Z"}},
+ {"post":{"uri":"at://did:plc:x/app.bsky.feed.post/rkey2","author":{"handle":"a.example.com"},"record":{"createdAt":"2026-11-04T15:00:00Z"},"likeCount":99,"indexedAt":"2026-11-04T15:00:01Z"}}
+]}

@@ -1,0 +1,133 @@
+/* Skeleton styles for v1. A proper visual design comes later. */
+
+:root {
+  --bg: #f7f7f5;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --muted: #5c5c5c;
+  --border: #e2e2de;
+  --link: #1a1a1a;
+  --visited: #6b5e8a;
+  --accent: #b4430f;
+  --gap: 16px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151515;
+    --card: #1f1f1f;
+    --text: #ececec;
+    --muted: #a3a3a3;
+    --border: #333333;
+    --link: #ececec;
+    --visited: #a99bd1;
+    --accent: #ff8a4c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+a { color: var(--link); }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Top bar */
+.top {
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; gap: var(--gap);
+  padding: 8px var(--gap);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.top h1 { font-size: 1rem; margin: 0; white-space: nowrap; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.chips a {
+  flex: none; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px;
+  text-decoration: none; font-size: 0.85rem; color: var(--muted);
+}
+
+/* Customize */
+.customize { padding: 8px var(--gap); }
+.customize summary { cursor: pointer; color: var(--muted); }
+.customize form { margin-top: 8px; max-width: 560px; }
+.customize .row { display: flex; flex-wrap: wrap; gap: var(--gap); align-items: center; margin: 8px 0; }
+.customize table { border-collapse: collapse; width: 100%; }
+.customize th, .customize td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border); }
+.customize input[type='number'] { width: 4.5em; }
+.hint { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+/* Cards: grid on desktop */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--gap);
+  padding: var(--gap);
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+  scroll-margin-top: 56px;
+}
+.card header {
+  position: sticky; top: 0;
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  padding: 10px 12px; background: var(--card); border-bottom: 1px solid var(--border);
+}
+.card h2 { font-size: 1rem; margin: 0; }
+.card h2 a { text-decoration: none; }
+.card time, .notice { color: var(--muted); font-size: 0.8rem; }
+.notice { padding: 0 12px; }
+.card ol { list-style: none; margin: 0; padding: 0; }
+
+.item { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.item:last-child { border-bottom: 0; }
+.item .title { text-decoration: none; font-weight: 500; }
+.item .title:visited { color: var(--visited); }
+.item .title:hover { text-decoration: underline; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 2px; font-size: 0.8rem; color: var(--muted); }
+.meta a { color: var(--muted); }
+.badge { padding: 0 6px; border: 1px solid var(--border); border-radius: 4px; text-decoration: none; }
+
+footer { padding: var(--gap); text-align: center; font-size: 0.8rem; }
+footer a { color: var(--muted); }
+
+/* Mobile: one card per screen, swipe sideways (CSS scroll-snap, no JS). */
+@media (max-width: 767px) {
+  .cards {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: var(--gap) 0;
+    gap: 0;
+  }
+  .card {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    max-height: none;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}

@@ -1,0 +1,57 @@
+---
+import { domainOf } from '../lib/normalize-url';
+import { relativeAge } from '../lib/time';
+import type { Item } from '../lib/types';
+import { SOURCE_BY_ID } from '../sources';
+
+interface Props {
+  item: Item;
+  /** For Trending: every source this story appeared on. */
+  appearances?: Item[];
+  scoreLabel?: string;
+}
+
+const { item, appearances, scoreLabel = 'points' } = Astro.props;
+const domain = domainOf(item.url);
+const age = SOURCE_BY_ID.get(item.source)?.undated ? '' : relativeAge(item.publishedAt);
+const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
+---
+
+<li class="item">
+  <a class="title" href={item.url} target="_blank" rel="noopener noreferrer">
+    {item.title}<span class="sr-only"> (opens in new tab)</span>
+  </a>
+  <div class="meta">
+    {domain && <span>{domain}</span>}
+    {age && <span>{age}</span>}
+    {
+      appearances ? (
+        appearances.map((a) => {
+          const name = SOURCE_BY_ID.get(a.source)?.name ?? a.source;
+          return a.discussionUrl ? (
+            <a class="badge" href={a.discussionUrl} target="_blank" rel="noopener noreferrer">
+              {name}
+              <span class="sr-only"> discussion (opens in new tab)</span>
+            </a>
+          ) : (
+            <span class="badge">{name}</span>
+          );
+        })
+      ) : (
+        <>
+          {item.score !== undefined && (
+            <span>
+              {item.score.toLocaleString('en-US')} {scoreLabel}
+            </span>
+          )}
+          {item.discussionUrl && (
+            <a href={item.discussionUrl} target="_blank" rel="noopener noreferrer">
+              {item.comments !== undefined ? plural(item.comments, 'comment') : 'discuss'}
+              <span class="sr-only"> (opens in new tab)</span>
+            </a>
+          )}
+        </>
+      )
+    }
+  </div>
+</li>

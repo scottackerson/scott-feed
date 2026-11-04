@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Pub</title>
+<item><title><![CDATA[Headline with <b>tags</b> & stuff]]></title><link>https://pub.example.com/2026/11/04/headline/</link><guid>https://pub.example.com/?p=1</guid><pubDate>Wed, 04 Nov 2026 15:00:00 +0000</pubDate></item>
+<item><title>Second &#8217;quoted&#8217;</title><link>https://pub.example.com/two</link><pubDate>Wed, 04 Nov 2026 14:00:00 +0000</pubDate></item>
+</channel></rss>

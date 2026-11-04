@@ -1,0 +1,10 @@
+{
+  "name": "scott-feed",
+  "short_name": "scott-feed",
+  "description": "A fast, stateless dashboard of trending tech news.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#151515",
+  "theme_color": "#b4430f",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

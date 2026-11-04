@@ -1,0 +1,27 @@
+name: Source request
+description: Suggest a new tech news source
+labels: [source-request]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Source name
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Homepage
+    validations:
+      required: true
+  - type: textarea
+    id: access
+    attributes:
+      label: How can it be fetched?
+      description: Official API, RSS/Atom feed, or other. Link to docs and note any key, rate limit or terms of use.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it a good fit?
