@@ -24,7 +24,7 @@ Source IDs: `trending`, `hn`, `lobsters`, `reddit`, `github`, `producthunt`, `de
 
 ## Quick start
 
-Requires Node 22+.
+Requires Node 24.
 
 ```bash
 npm install
