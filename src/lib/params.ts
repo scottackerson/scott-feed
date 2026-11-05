@@ -12,7 +12,12 @@ export interface ViewConfig {
   /** Per-card item count overrides. */
   perCard: Record<string, number>;
   window: WindowKey;
+  /** Per-card alternative sort order (mode id); absent means the default order. */
+  sort: Record<string, string>;
 }
+
+/** For each card with alternative orders: the default mode id and the others. */
+export type SortOptions = Readonly<Record<string, { default: string; others: readonly string[] }>>;
 
 function parseCount(v: string | null): number | undefined {
   if (v == null || v.trim() === '') return undefined;
@@ -22,16 +27,21 @@ function parseCount(v: string | null): number | undefined {
 }
 
 export function defaultConfig(allCards: readonly string[]): ViewConfig {
-  return { cards: [...allCards], n: DEFAULT_ITEMS, perCard: {}, window: DEFAULT_WINDOW };
+  return { cards: [...allCards], n: DEFAULT_ITEMS, perCard: {}, window: DEFAULT_WINDOW, sort: {} };
 }
 
 /**
  * Parse a view config from URL params. Unknown or invalid values are ignored
  * and fall back to defaults; this never throws.
  *
- * `allCards` is the list of valid card ids in default order.
+ * `allCards` is the list of valid card ids in default order; `sorts` lists
+ * the cards that have alternative orders (`sort.<id>=<mode>`).
  */
-export function parseParams(params: URLSearchParams, allCards: readonly string[]): ViewConfig {
+export function parseParams(
+  params: URLSearchParams,
+  allCards: readonly string[],
+  sorts: SortOptions = {},
+): ViewConfig {
   const cfg = defaultConfig(allCards);
   const valid = new Set(allCards);
 
@@ -55,6 +65,12 @@ export function parseParams(params: URLSearchParams, allCards: readonly string[]
   const w = params.get('window');
   if (w && isWindowKey(w)) cfg.window = w;
 
+  for (const [id, opts] of Object.entries(sorts)) {
+    const v = params.get(`sort.${id}`)?.trim().toLowerCase();
+    // The default mode (e.g. sort.hn=front) is valid but canonicalizes away.
+    if (v && opts.others.includes(v)) cfg.sort[id] = v;
+  }
+
   return cfg;
 }
 
@@ -62,10 +78,14 @@ export function parseParams(params: URLSearchParams, allCards: readonly string[]
  * Parse the Customize form submission (`edit=1`). Fields:
  * - `show` (repeated): card ids to display
  * - `o.<id>`: numeric display order
- * - `n`, `n.<id>`, `window`: as in the URL format
+ * - `n`, `n.<id>`, `window`, `sort.<id>`: as in the URL format
  */
-export function parseForm(params: URLSearchParams, allCards: readonly string[]): ViewConfig {
-  const base = parseParams(params, allCards);
+export function parseForm(
+  params: URLSearchParams,
+  allCards: readonly string[],
+  sorts: SortOptions = {},
+): ViewConfig {
+  const base = parseParams(params, allCards, sorts);
   const valid = new Set(allCards);
   const shown = params.getAll('show').filter((id) => valid.has(id));
   const order = (id: string) => {
@@ -95,6 +115,9 @@ export function toQuery(cfg: ViewConfig, allCards: readonly string[]): string {
   for (const id of allCards) {
     const v = cfg.perCard[id];
     if (v !== undefined && v !== cfg.n) parts.push(`n.${id}=${v}`);
+  }
+  for (const id of allCards) {
+    if (cfg.sort[id]) parts.push(`sort.${id}=${cfg.sort[id]}`);
   }
   return parts.join('&');
 }

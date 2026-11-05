@@ -13,7 +13,10 @@ const isTrending = card.kind === 'trending';
 const name = isTrending ? 'Trending' : card.result.source.name;
 const homepage = isTrending ? undefined : card.result.source.homepage;
 const about = isTrending ? undefined : card.result.source.about;
-const sortDescription = isTrending ? TRENDING_SORT_DESCRIPTION : card.result.source.sortDescription;
+const sort = isTrending ? undefined : card.result.sort;
+const sortDescription = isTrending
+  ? TRENDING_SORT_DESCRIPTION
+  : (sort?.sortDescription ?? card.result.source.sortDescription);
 const fetchedAt = isTrending ? card.fetchedAt : card.result.fetchedAt;
 const status = isTrending ? 'ok' : card.result.status;
 // Not current: this source, or (for Trending) any source in it, couldn't be reached.
@@ -26,6 +29,7 @@ const headingId = `h-${card.id}`;
   <header>
     <h2 id={headingId}>
       {homepage ? <a href={homepage} target="_blank" rel="noopener noreferrer">{name}</a> : name}
+      {sort && <span class="mode"> · {sort.label.toLowerCase()}</span>}
     </h2>
     <details class="info">
       <summary title={about ? `About ${name} and how this card is sorted` : 'How this card is sorted'}>

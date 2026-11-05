@@ -116,6 +116,7 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
   border: 1px solid var(--control-line); border-radius: 4px; padding: 5px 6px;
 }
 .panel input[type='number'] { width: 4.5em; }
+.panel .none { color: var(--muted); }
 .panel input[type='checkbox'] { width: 16px; height: 16px; accent-color: var(--accent); }
 .panel button, .panel .row a {
   font: 700 12px/1 var(--mono); padding: 9px 12px; border-radius: 4px; cursor: pointer;
@@ -150,6 +151,7 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
   margin: 0; font: 700 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
 }
 .card.hot h2 { color: var(--accent-text); }
+.card h2 .mode { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
 .card > header time { margin-left: auto; font: 11px/1 var(--mono); color: var(--muted); }
 .notice { margin: 0; padding: 12px 16px; color: var(--muted); font: 12px/1.4 var(--mono); }
 
@@ -203,6 +205,12 @@ footer a { text-decoration: underline; }
   .status { display: none; }
   .customize { margin-left: auto; }
   .customize summary { padding: 0 12px; height: 40px; display: flex; align-items: center; }
+  /* Fit the five-column Customize table in a phone-width panel. */
+  .customize .panel { padding: 12px; }
+  .panel table { font-size: 12px; }
+  .panel th, .panel td { padding: 6px 3px; }
+  .panel input[type='number'] { width: 3.4em; }
+  .panel select { max-width: 6.5em; }
   .chips { order: 3; flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
   .chips a { padding: 10px 12px; background: var(--control); }
 

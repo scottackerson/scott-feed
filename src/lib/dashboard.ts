@@ -30,7 +30,8 @@ export async function loadDashboard(cfg: ViewConfig, now = Date.now()): Promise<
   await Promise.all(
     [...needed].map(async (id) => {
       const s = SOURCE_BY_ID.get(id);
-      if (s) results.set(id, await loadSource(s));
+      const sort = s?.sorts?.others.find((m) => m.id === cfg.sort[id]);
+      if (s) results.set(id, await loadSource(s, sort));
     }),
   );
 

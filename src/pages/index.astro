@@ -6,18 +6,18 @@ import { PAGE_CACHE_CONTROL } from '../lib/config';
 import { loadDashboard } from '../lib/dashboard';
 import { parseForm, parseParams, toQuery } from '../lib/params';
 import { clockUtc } from '../lib/time';
-import { ALL_CARDS, SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
+import { ALL_CARDS, SORT_OPTIONS, SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
 import '../styles/global.css';
 
 const params = Astro.url.searchParams;
 
 // The Customize form submits raw fields; turn them into a clean, canonical URL.
 if (params.has('edit')) {
-  const q = toQuery(parseForm(params, ALL_CARDS), ALL_CARDS);
+  const q = toQuery(parseForm(params, ALL_CARDS, SORT_OPTIONS), ALL_CARDS);
   return Astro.redirect(q ? `/?${q}` : '/', 303);
 }
 
-const cfg = parseParams(params, ALL_CARDS);
+const cfg = parseParams(params, ALL_CARDS, SORT_OPTIONS);
 const cards = await loadDashboard(cfg);
 
 Astro.response.headers.set('Cache-Control', PAGE_CACHE_CONTROL);

@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { countFor, parseForm, parseParams, toQuery } from '../src/lib/params';
 
 const ALL = ['trending', 'hn', 'lobsters', 'reddit'];
+const SORTS = { hn: { default: 'front', others: ['momentum'] } };
 const p = (q: string) => new URLSearchParams(q);
 
 describe('parseParams', () => {
   it('returns defaults for an empty query', () => {
-    expect(parseParams(p(''), ALL)).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h' });
+    expect(parseParams(p(''), ALL)).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', sort: {} });
   });
 
   it('respects card order and drops unknown/duplicate ids', () => {
@@ -15,7 +16,7 @@ describe('parseParams', () => {
 
   it('falls back to defaults on garbage', () => {
     const cfg = parseParams(p('n=abc&cards=nope&window=1y&n.hn=x'), ALL);
-    expect(cfg).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h' });
+    expect(cfg).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', sort: {} });
   });
 
   it('clamps item counts to 5..50', () => {
@@ -54,5 +55,24 @@ describe('parseForm', () => {
 
   it('keeps defaults if nothing is checked', () => {
     expect(parseForm(p('edit=1'), ALL).cards).toEqual(ALL);
+  });
+});
+
+describe('sort modes', () => {
+  it('accepts a known mode and puts it last in the canonical URL', () => {
+    const cfg = parseParams(p('sort.hn=Momentum&n.hn=30'), ALL, SORTS);
+    expect(cfg.sort).toEqual({ hn: 'momentum' });
+    expect(toQuery(cfg, ALL)).toBe('n.hn=30&sort.hn=momentum');
+  });
+
+  it('drops the default mode, unknown modes and cards without modes', () => {
+    expect(parseParams(p('sort.hn=front'), ALL, SORTS).sort).toEqual({});
+    expect(parseParams(p('sort.hn=bogus&sort.lobsters=momentum'), ALL, SORTS).sort).toEqual({});
+    expect(toQuery(parseParams(p('sort.hn=front'), ALL, SORTS), ALL)).toBe('');
+  });
+
+  it('reads the Customize select', () => {
+    const cfg = parseForm(p('edit=1&show=hn&sort.hn=momentum'), ALL, SORTS);
+    expect(toQuery(cfg, ALL)).toBe('cards=hn&sort.hn=momentum');
   });
 });

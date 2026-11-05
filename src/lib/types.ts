@@ -16,6 +16,18 @@ export interface Item {
   source: string;
 }
 
+/** An alternative order for a source's card, e.g. Hacker News "momentum". */
+export interface SortMode {
+  /** URL value, e.g. "momentum" in `sort.hn=momentum`. */
+  id: string;
+  /** Short label for Customize and the card header. */
+  label: string;
+  /** Replaces the source's sortDescription in the card's info box. */
+  sortDescription: string;
+  /** Fetch items in this order. Throw on failure. */
+  fetch(): Promise<Item[]>;
+}
+
 /** A news source adapter. One module per source in `src/sources/`. */
 export interface Source {
   /** Short, URL-safe id used in query params, e.g. "hn". */
@@ -51,6 +63,12 @@ export interface Source {
   scoreLabel?: string;
   /** Fetch items in the source's native order. Throw on failure. */
   fetch(): Promise<Item[]>;
+  /**
+   * Optional other orders, chosen per card with `sort.<id>=<mode id>` in the
+   * URL. The source's own fetch and sortDescription are the default order,
+   * named by `default`.
+   */
+  sorts?: { default: { id: string; label: string }; others: SortMode[] };
 }
 
 export type SourceStatus = 'ok' | 'stale' | 'error';
@@ -62,6 +80,8 @@ export interface SourceResult {
   status: SourceStatus;
   /** When the data was fetched (ms epoch), or undefined if never. */
   fetchedAt?: number;
+  /** The alternative order in use, if not the source's default. */
+  sort?: SortMode;
 }
 
 /** An item in the Trending card: one story possibly seen on several sources. */

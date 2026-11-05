@@ -66,6 +66,18 @@ describe('loadSource', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
+  it('caches each sort order separately', async () => {
+    const src = fakeSource('two-orders', async () => [item]);
+    const alt = { id: 'alt', label: 'Alt', sortDescription: '', fetch: async () => [{ ...item, id: '2', title: 'Other' }] };
+    const a = await loadSource(src);
+    const b = await loadSource(src, alt);
+    expect(a.items[0].title).toBe('Hello');
+    expect(b.items[0].title).toBe('Other');
+    expect(b.items[0].source).toBe('two-orders');
+    expect(b.sort?.id).toBe('alt');
+    expect(a.sort).toBeUndefined();
+  });
+
   it('reports an error when there is no earlier data', async () => {
     const res = await loadSource(fakeSource('never', async () => Promise.reject(new Error('down'))));
     expect(res).toMatchObject({ status: 'error', items: [] });

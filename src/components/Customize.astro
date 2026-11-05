@@ -12,6 +12,7 @@ const { cfg } = Astro.props;
 // Shown cards first (in their order), then hidden ones.
 const rows = [...cfg.cards, ...ALL_CARDS.filter((id) => !cfg.cards.includes(id))];
 const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.get(id)?.name ?? id));
+const sortsOf = (id: string) => SOURCE_BY_ID.get(id)?.sorts;
 ---
 
 <details class="customize">
@@ -32,7 +33,7 @@ const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.
     </div>
     <table>
       <thead>
-        <tr><th scope="col">Show</th><th scope="col">Card</th><th scope="col">Order</th><th scope="col">Items</th></tr>
+        <tr><th scope="col">Show</th><th scope="col">Card</th><th scope="col">Order</th><th scope="col">Items</th><th scope="col">Sort</th></tr>
       </thead>
       <tbody>
         {
@@ -55,6 +56,18 @@ const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.
                   max={MAX_ITEMS}
                   aria-label={`${nameOf(id)} items`}
                 />
+              </td>
+              <td>
+                {sortsOf(id) ? (
+                  <select name={`sort.${id}`} aria-label={`${nameOf(id)} sort order`}>
+                    <option value={sortsOf(id)!.default.id}>{sortsOf(id)!.default.label}</option>
+                    {sortsOf(id)!.others.map((m) => (
+                      <option value={m.id} selected={cfg.sort[id] === m.id}>{m.label}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <span class="none" aria-hidden="true">—</span>
+                )}
               </td>
             </tr>
           ))

@@ -1,7 +1,7 @@
 import { getCache, type RuntimeCache } from '@vercel/functions';
 import { LAST_GOOD_TTL_S, SHARED_CACHE_TIMEOUT_MS, SOURCE_TTL_MS } from './config';
 import { isHttpUrl } from './normalize-url';
-import type { Item, Source, SourceResult } from './types';
+import type { Item, Source, SortMode, SourceResult } from './types';
 
 interface Entry {
   items: Item[];
@@ -40,18 +40,18 @@ function isEntry(v: unknown): v is Entry {
 }
 
 /** Read the shared cache, giving up quickly so a slow cache never slows the page. */
-async function readShared(id: string): Promise<Entry | undefined> {
+async function readShared(key: string, sourceId: string): Promise<Entry | undefined> {
   const cache = sharedCache();
   if (!cache) return undefined;
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const v = await Promise.race([
-      cache.get(id),
+      cache.get(key),
       new Promise<null>((r) => (timer = setTimeout(() => r(null), SHARED_CACHE_TIMEOUT_MS))),
     ]);
     if (!isEntry(v)) return undefined;
     // Re-sanitize: the shared cache is outside this process.
-    return { fetchedAt: v.fetchedAt, items: sanitize(v.items, id) };
+    return { fetchedAt: v.fetchedAt, items: sanitize(v.items, sourceId) };
   } catch {
     return undefined;
   } finally {
@@ -59,9 +59,9 @@ async function readShared(id: string): Promise<Entry | undefined> {
   }
 }
 
-function writeShared(id: string, entry: Entry): void {
+function writeShared(key: string, entry: Entry): void {
   sharedCache()
-    ?.set(id, entry, { ttl: LAST_GOOD_TTL_S, name: `source:${id}` })
+    ?.set(key, entry, { ttl: LAST_GOOD_TTL_S, name: `source:${key}` })
     .catch(() => {});
 }
 
@@ -91,20 +91,19 @@ export function sanitize(items: Item[], sourceId: string): Item[] {
   return out;
 }
 
-function refresh(source: Source): Promise<Entry> {
-  let p = inflight.get(source.id);
+function refresh(key: string, sourceId: string, fetch: () => Promise<Item[]>): Promise<Entry> {
+  let p = inflight.get(key);
   if (!p) {
-    p = source
-      .fetch()
+    p = fetch()
       .then((items) => {
-        const entry = { items: sanitize(items, source.id), fetchedAt: Date.now() };
-        if (!entry.items.length) throw new Error(`${source.id}: no items`);
-        memory.set(source.id, entry);
-        writeShared(source.id, entry);
+        const entry = { items: sanitize(items, sourceId), fetchedAt: Date.now() };
+        if (!entry.items.length) throw new Error(`${key}: no items`);
+        memory.set(key, entry);
+        writeShared(key, entry);
         return entry;
       })
-      .finally(() => inflight.delete(source.id));
-    inflight.set(source.id, p);
+      .finally(() => inflight.delete(key));
+    inflight.set(key, p);
   }
   return p;
 }
@@ -116,24 +115,27 @@ const isFresh = (e: Entry | undefined): boolean => !!e && Date.now() - e.fetched
  * fetch fails, fall back to the last good data with status 'stale' and its
  * original fetch time.
  */
-export async function loadSource(source: Source): Promise<SourceResult> {
-  let cached = memory.get(source.id);
+export async function loadSource(source: Source, sort?: SortMode): Promise<SourceResult> {
+  // Each order is cached separately: "hn" and "hn~momentum" are different lists.
+  const key = sort ? `${source.id}~${sort.id}` : source.id;
+  const base = { source, ...(sort && { sort }) };
+  let cached = memory.get(key);
   if (!isFresh(cached)) {
-    const fromShared = await readShared(source.id);
+    const fromShared = await readShared(key, source.id);
     if (fromShared && (!cached || fromShared.fetchedAt > cached.fetchedAt)) {
       cached = fromShared;
-      memory.set(source.id, fromShared);
+      memory.set(key, fromShared);
     }
   }
   if (cached && isFresh(cached)) {
-    return { source, items: cached.items, status: 'ok', fetchedAt: cached.fetchedAt };
+    return { ...base, items: cached.items, status: 'ok', fetchedAt: cached.fetchedAt };
   }
   try {
-    const fresh = await refresh(source);
-    return { source, items: fresh.items, status: 'ok', fetchedAt: fresh.fetchedAt };
+    const fresh = await refresh(key, source.id, sort ? () => sort.fetch() : () => source.fetch());
+    return { ...base, items: fresh.items, status: 'ok', fetchedAt: fresh.fetchedAt };
   } catch (err) {
-    console.error(`[scott-feed] source "${source.id}" failed:`, err instanceof Error ? err.message : err);
-    if (cached) return { source, items: cached.items, status: 'stale', fetchedAt: cached.fetchedAt };
-    return { source, items: [], status: 'error' };
+    console.error(`[scott-feed] source "${key}" failed:`, err instanceof Error ? err.message : err);
+    if (cached) return { ...base, items: cached.items, status: 'stale', fetchedAt: cached.fetchedAt };
+    return { ...base, items: [], status: 'error' };
   }
 }

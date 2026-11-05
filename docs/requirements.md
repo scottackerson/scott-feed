@@ -61,7 +61,7 @@ All sources are curated in code. Six were added after launch (Techmeme, r/LocalL
 
 | ID | Source | Method | Native score | Discussion link | Notes / risk |
 |---|---|---|---|---|---|
-| `hn` | Hacker News | Algolia API `search?tags=front_page` for stories, official `topstories.json` for rank order | points | ✅ | Free, reliable. Falls back to points order if ranking fails |
+| `hn` | Hacker News | Algolia API `search?tags=front_page` for stories, official `topstories.json` for rank order | points | ✅ | Free, reliable. Falls back to points order if ranking fails. Optional **momentum** order (`sort.hn=momentum`): Algolia `search?tags=story` for the last 24h with ≥10 points, ranked by points ÷ (hours since posting + 1) |
 | `lobsters` | Lobsters | `https://lobste.rs/hottest.json` | score | ✅ | Free, reliable |
 | `reddit` | Reddit (r/programming, r/technology, r/webdev, r/MachineLearning) | Subreddit `.rss` / `.json` | upvotes (JSON only) | ✅ | **Risk:** Reddit often blocks datacenter IPs (403/429). Fail gracefully; may need OAuth app credentials (free) via env vars |
 | `github` | GitHub Trending | Scrape `github.com/trending` HTML | stars today | ❌ | **Risk:** no official API; markup can change |
@@ -110,7 +110,7 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
   - **Time decay:** `heat = percentile × weight / (1 + age_hours / 12)`. Sources without dates (GitHub Trending) use an assumed age of 12h.
   - **Cross-source boost:** a story's heat is multiplied by `1 + 0.5 × (sources − 1)`.
   - The constants live in a single config module so they can be tuned.
-- **FR-14** Source cards keep each source's **native** ordering.
+- **FR-14** Source cards keep each source's **native** ordering by default. A source may offer alternative orders (see `sort.<id>`), chosen per card in the Customize panel's Sort column. The card header then names the order (e.g. "Hacker News · momentum"), its info box explains it, and each order is cached separately.
 
 ### 6.4 Configuration via URL parameters
 
@@ -121,6 +121,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 | `cards` | `cards=trending,hn,lobsters,github` | Which cards to show, **in this order** | All cards, default order |
 | `n` | `n=20` | Items per card (global) | `20` |
 | `n.<id>` | `n.hn=30&n.trending=40` | Per-card item count override | — |
+| `sort.<id>` | `sort.hn=momentum` | Per-card sort order, for cards that offer one (currently Hacker News: `front` or `momentum`) | the card's default order |
 | `window` | `window=12h` | Max item age (`6h`, `12h`, `24h`, `48h`, `7d`) | `24h` |
 
 - **FR-15** Invalid or unknown values are ignored and the default is used. The page must never error because of bad parameters.

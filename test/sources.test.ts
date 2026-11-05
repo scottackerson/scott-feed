@@ -4,7 +4,7 @@ import { parse as bluesky } from '../src/sources/bluesky';
 import { parse as devto } from '../src/sources/devto';
 import { parse as github } from '../src/sources/github';
 import { parse as hfpapers } from '../src/sources/hfpapers';
-import { parse as hn } from '../src/sources/hn';
+import { parse as hn, momentumOf, parseMomentum } from '../src/sources/hn';
 import { parse as lobsters } from '../src/sources/lobsters';
 import { parse as mastodon } from '../src/sources/mastodon';
 import { parse as producthunt } from '../src/sources/producthunt';
@@ -20,6 +20,21 @@ describe('source parsers', () => {
   it('hn: follows the front-page rank order when given', () => {
     // Story 3 isn't in the ranked list, so it goes last.
     expect(hn(json('hn.json'), [1, 2]).map((i) => i.id)).toEqual(['1', '2', '3']);
+  });
+
+  it('hn momentum: ranks by points per hour, not total points', () => {
+    const now = Date.parse('2026-11-05T12:00:00Z');
+    const hit = (id: string, points: number, hoursAgo: number) => ({
+      objectID: id,
+      title: id,
+      url: `https://e.com/${id}`,
+      points,
+      num_comments: 0,
+      created_at: new Date(now - hoursAgo * 3_600_000).toISOString(),
+    });
+    const items = parseMomentum({ hits: [hit('old', 600, 11), hit('fast', 200, 2), hit('slow', 30, 20)] }, now);
+    expect(items.map((i) => i.id)).toEqual(['fast', 'old', 'slow']);
+    expect(momentumOf(100, new Date(now).toISOString(), now)).toBe(100);
   });
 
   it('hn: falls back to points order, and to the HN link for Ask HN', () => {

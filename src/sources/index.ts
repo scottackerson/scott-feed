@@ -2,6 +2,7 @@
  * Source registry. Order here is the default card order.
  * To add a source: create `src/sources/<id>.ts` exporting a `Source`, then add it below.
  */
+import type { SortOptions } from '../lib/params';
 import type { Source } from '../lib/types';
 import bluesky from './bluesky';
 import devto from './devto';
@@ -43,3 +44,11 @@ export const TRENDING_ID = 'trending';
 export const ALL_CARDS: string[] = [TRENDING_ID, ...SOURCES.map((s) => s.id)];
 
 export const SOURCE_BY_ID = new Map(SOURCES.map((s) => [s.id, s]));
+
+/** Cards with alternative orders, for URL parsing (`sort.<id>=<mode>`). */
+export const SORT_OPTIONS: SortOptions = Object.fromEntries(
+  SOURCES.filter((s) => s.sorts).map((s) => [
+    s.id,
+    { default: s.sorts!.default.id, others: s.sorts!.others.map((m) => m.id) },
+  ]),
+);
