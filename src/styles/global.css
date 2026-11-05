@@ -153,11 +153,9 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .card > header time { margin-left: auto; font: 11px/1 var(--mono); color: var(--muted); }
 .notice { margin: 0; padding: 12px 16px; color: var(--muted); font: 12px/1.4 var(--mono); }
 
-/* A source that couldn't be reached: its last data stays, marked in red. */
+/* A source that couldn't be reached: its last data stays and its time turns red. */
 .card.stale > header time,
-.status .stale,
-.stale-notice { color: var(--stale); }
-.stale-notice { padding-bottom: 4px; }
+.status .stale { color: var(--stale); }
 
 /* "How this card is sorted" — native <details>, works without JS. */
 .info summary {

@@ -16,9 +16,9 @@ const about = isTrending ? undefined : card.result.source.about;
 const sortDescription = isTrending ? TRENDING_SORT_DESCRIPTION : card.result.source.sortDescription;
 const fetchedAt = isTrending ? card.fetchedAt : card.result.fetchedAt;
 const status = isTrending ? 'ok' : card.result.status;
-const staleNames = card.kind === 'trending' ? card.staleSources.map((s) => s.name) : [];
-const isStale = status === 'stale' || staleNames.length > 0;
-const list = (names: string[]) => names.join(', ').replace(/, ([^,]*)$/, ' and $1');
+// Not current: this source, or (for Trending) any source in it, couldn't be reached.
+// Shown by turning the card's time red; hovering the time explains why.
+const isStale = status === 'stale' || (card.kind === 'trending' && card.staleSources.length > 0);
 const headingId = `h-${card.id}`;
 ---
 
@@ -46,28 +46,19 @@ const headingId = `h-${card.id}`;
         <time
           datetime={new Date(fetchedAt).toISOString()}
           data-clock
-          title={isStale ? 'Not current: when this data was last fetched successfully' : "When this card's data was fetched"}
+          title={
+            !isStale
+              ? "When this card's data was fetched"
+              : card.kind === 'trending'
+                ? `Not current: couldn't reach ${card.staleSources.map((s) => s.name).join(', ')}. Its oldest data was fetched`
+                : `Not current: couldn't reach ${name}. This is when the data was last fetched`
+          }
         >
           {clockUtc(fetchedAt)}
         </time>
       )
     }
   </header>
-
-  {
-    status === 'stale' && (
-      <p class="notice stale-notice" role="status">
-        Couldn't reach {name}. Showing the last data we got, from the time above.
-      </p>
-    )
-  }
-  {
-    staleNames.length > 0 && (
-      <p class="notice stale-notice" role="status">
-        Couldn't reach {list(staleNames)}. {staleNames.length === 1 ? 'Its' : 'Their'} stories are from an earlier fetch.
-      </p>
-    )
-  }
 
   {
     card.items.length ? (
