@@ -1,7 +1,7 @@
 ---
 import { TRENDING_SORT_DESCRIPTION } from '../lib/config';
 import type { CardData } from '../lib/dashboard';
-import { relativeAge } from '../lib/time';
+import { clockUtc } from '../lib/time';
 import ItemRow from './ItemRow.astro';
 
 interface Props {
@@ -17,8 +17,6 @@ const sortDescription = isTrending ? TRENDING_SORT_DESCRIPTION : card.result.sou
 const fetchedAt = isTrending ? card.fetchedAt : card.result.fetchedAt;
 const status = isTrending ? 'ok' : card.result.status;
 const headingId = `h-${card.id}`;
-const ago = fetchedAt ? relativeAge(fetchedAt) : '';
-const updated = ago === 'now' ? 'just now' : `${ago} ago`;
 ---
 
 <section class:list={['card', { hot: isTrending }]} id={card.id} aria-labelledby={headingId}>
@@ -40,7 +38,13 @@ const updated = ago === 'now' ? 'just now' : `${ago} ago`;
         <p><strong>How this card is sorted:</strong> {sortDescription}</p>
       </div>
     </details>
-    {fetchedAt && <time datetime={new Date(fetchedAt).toISOString()}>{updated}</time>}
+    {
+      fetchedAt && (
+        <time datetime={new Date(fetchedAt).toISOString()} data-clock title="When this card's data was fetched">
+          {clockUtc(fetchedAt)}
+        </time>
+      )
+    }
   </header>
 
   {status === 'stale' && <p class="notice">Couldn't reach {name}. Showing the last good data.</p>}

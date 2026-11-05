@@ -26,7 +26,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
     </a>
     <div class="meta">
       {domain && <span>{domain}</span>}
-      {age && <span>{age}</span>}
+      {age && <time datetime={item.publishedAt} data-age>{age}</time>}
       {
         appearances ? (
           <span class="badges">

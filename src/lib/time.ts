@@ -30,3 +30,13 @@ export function relativeAge(iso: string | number, now = Date.now()): string {
   if (hrs < 48) return `${hrs}h`;
   return `${Math.floor(hrs / 24)}d`;
 }
+
+/**
+ * Clock time in UTC, e.g. "14:41 UTC". This is the no-JS fallback: the server
+ * can't know the viewer's time zone, so public/local-time.js rewrites it.
+ */
+export function clockUtc(ms: number): string {
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
+}

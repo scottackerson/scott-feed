@@ -88,7 +88,7 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 - **FR-1** The page shows a **Trending** card followed by one card per enabled source.
 - **FR-2** Desktop (≥ 768px): a responsive grid of cards with independent vertical scrolling, or a fixed card height with internal scroll.
 - **FR-3** Mobile (< 768px): cards are full-width and swipeable horizontally using CSS scroll-snap, with a sticky row of source chips that jump to each card through anchor links. This must work without JavaScript.
-- **FR-4** Each card header shows the source name, a link to the source's homepage, and when the data was last refreshed (for example "updated 6 min ago").
+- **FR-4** Each card header shows the source name, a link to the source's homepage, and the clock time its data was fetched, in the viewer's own time zone (for example "6:42 PM"). The server renders it in UTC ("00:42 UTC") and a small optional script, `public/local-time.js`, converts it. The top bar shows the oldest card's time. Story ages ("3h") stay relative, and the same script recounts them every minute so an open tab never shows stale ages.
 - **FR-4a** Each card header has an info button (ⓘ) that reveals, on click, a short blurb about the source website (`Source.about`) and a plain-language explanation of how that card is sorted (`Source.sortDescription`). It uses native `<details>` so it works without JavaScript. Every source must provide both texts. The Trending card shows only its sort explanation.
 - **FR-5** Visual style is "Ticker": dense, terminal-flavored, dark by default, with a light variant that follows `prefers-color-scheme`. There is no toggle, because a toggle would need stored state. Fonts are system stacks only (no web fonts).
 

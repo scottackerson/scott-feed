@@ -5,7 +5,7 @@ import Customize from '../components/Customize.astro';
 import { PAGE_CACHE_CONTROL } from '../lib/config';
 import { loadDashboard } from '../lib/dashboard';
 import { parseForm, parseParams, toQuery } from '../lib/params';
-import { relativeAge } from '../lib/time';
+import { clockUtc } from '../lib/time';
 import { ALL_CARDS, SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
 import '../styles/global.css';
 
@@ -30,8 +30,6 @@ const times = cards
   .map((c) => (c.kind === 'trending' ? c.fetchedAt : c.result.fetchedAt))
   .filter((t): t is number => t !== undefined);
 const oldest = times.length ? Math.min(...times) : undefined;
-const ago = oldest ? relativeAge(oldest) : '';
-const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`) : '';
 ---
 
 <!doctype html>
@@ -47,6 +45,7 @@ const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/copy-link.js" defer is:inline></script>
+    <script src="/local-time.js" defer is:inline></script>
     {
       /*
        * Vercel Web Analytics (@vercel/analytics): cookieless, and the script
@@ -63,7 +62,13 @@ const updated = ago ? (ago === 'now' ? 'updated just now' : `updated ${ago} ago`
         {cards.map((c) => <a href={`#${c.id}`} aria-label={nameOf(c.id)}>{codeOf(c.id)}</a>)}
       </nav>
       <div class="status">
-        {updated && <span>{updated}</span>}
+        {
+          oldest && (
+            <span>
+              updated <time datetime={new Date(oldest).toISOString()} data-clock title="When the oldest card's data was fetched">{clockUtc(oldest)}</time>
+            </span>
+          )
+        }
         <span>window: {cfg.window}</span>
       </div>
       <Customize cfg={cfg} />
