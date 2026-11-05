@@ -3,6 +3,12 @@
 /** How long fetched source data is considered fresh. */
 export const SOURCE_TTL_MS = 10 * 60 * 1000;
 
+/** How long the last good data is kept for a source that stops responding (seconds). */
+export const LAST_GOOD_TTL_S = 7 * 24 * 60 * 60;
+
+/** Give up on a shared-cache read after this long and fetch the source instead. */
+export const SHARED_CACHE_TIMEOUT_MS = 300;
+
 /** CDN cache header for rendered pages. */
 export const PAGE_CACHE_CONTROL = 'public, max-age=0, s-maxage=600, stale-while-revalidate=3600';
 

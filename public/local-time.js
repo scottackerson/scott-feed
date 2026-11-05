@@ -3,6 +3,9 @@
 // Without this script the page shows UTC clock times and ages as of render.
 (() => {
   const clock = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+  // Older data (a source that's been down a while) also shows the date.
+  const dated = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const isToday = (t) => new Date(t).toDateString() === new Date().toDateString();
   const full = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'long' });
 
   // Must match relativeAge() in src/lib/time.ts.
@@ -24,7 +27,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     each('time[data-clock]', (el, t) => {
-      el.textContent = clock.format(t);
+      el.textContent = (isToday(t) ? clock : dated).format(t);
       el.title = `${el.title ? `${el.title}: ` : ''}${full.format(t)}`;
     });
     tick();

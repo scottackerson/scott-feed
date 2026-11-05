@@ -131,7 +131,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 
 ### 6.5 Failure handling
 
-- **FR-20** A source that fails, times out (3 seconds) or returns garbage never breaks the page. Its card shows "Couldn't reach <source> — showing last good data" if cached data exists, or "Unavailable right now" if not.
+- **FR-20** A source that fails, times out (3 seconds) or returns garbage never breaks the page. Its card keeps the last good data, with the time of that original fetch, and marks it as not current in red: the card's time, a "Couldn't reach <source>" notice, and the top bar's "updated" time. Trending keeps that source's stories and names it in a red notice. The last good data is kept for 7 days in Vercel's Runtime Cache (shared by all function instances, via `@vercel/functions`), so a brand-new instance can still show it. Only a source with no data in that time shows "Unavailable right now". Times older than today also show the date.
 - **FR-21** Trending is built from whichever sources succeeded.
 
 ### 6.6 PWA

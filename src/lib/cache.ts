@@ -1,4 +1,5 @@
-import { SOURCE_TTL_MS } from './config';
+import { getCache, type RuntimeCache } from '@vercel/functions';
+import { LAST_GOOD_TTL_S, SHARED_CACHE_TIMEOUT_MS, SOURCE_TTL_MS } from './config';
 import { isHttpUrl } from './normalize-url';
 import type { Item, Source, SourceResult } from './types';
 
@@ -8,12 +9,66 @@ interface Entry {
 }
 
 /**
- * Per-instance in-memory cache. On Vercel, warm function instances reuse it;
- * the CDN cache in front of the page absorbs nearly all traffic anyway.
- * Keeps the last good result so a failing source can show stale data.
+ * Two layers of cache, both holding the last good result per source:
+ *
+ * 1. `memory`: this function instance only. Fastest, but empty whenever Vercel
+ *    starts a new instance.
+ * 2. `shared`: Vercel's Runtime Cache, shared by every instance in a region
+ *    (an in-memory stand-in when running locally). It lets a new instance
+ *    reuse fresh data, and show the last good data when a source is down.
+ *
+ * Both are best-effort: if the shared cache fails, sources are fetched as usual.
  */
-const store = new Map<string, Entry>();
+const memory = new Map<string, Entry>();
 const inflight = new Map<string, Promise<Entry>>();
+
+let shared: RuntimeCache | null | undefined;
+function sharedCache(): RuntimeCache | null {
+  if (shared === undefined) {
+    try {
+      shared = getCache({ namespace: 'scott-feed-v1' });
+    } catch {
+      shared = null;
+    }
+  }
+  return shared;
+}
+
+function isEntry(v: unknown): v is Entry {
+  const e = v as Entry | null;
+  return !!e && typeof e.fetchedAt === 'number' && Array.isArray(e.items);
+}
+
+/** Read the shared cache, giving up quickly so a slow cache never slows the page. */
+async function readShared(id: string): Promise<Entry | undefined> {
+  const cache = sharedCache();
+  if (!cache) return undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const v = await Promise.race([
+      cache.get(id),
+      new Promise<null>((r) => (timer = setTimeout(() => r(null), SHARED_CACHE_TIMEOUT_MS))),
+    ]);
+    if (!isEntry(v)) return undefined;
+    // Re-sanitize: the shared cache is outside this process.
+    return { fetchedAt: v.fetchedAt, items: sanitize(v.items, id) };
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function writeShared(id: string, entry: Entry): void {
+  sharedCache()
+    ?.set(id, entry, { ttl: LAST_GOOD_TTL_S, name: `source:${id}` })
+    .catch(() => {});
+}
+
+/** Test hook: forget this instance's memory, as a brand-new instance would. */
+export function clearMemoryCache(): void {
+  memory.clear();
+}
 
 const MAX_TITLE = 300;
 
@@ -44,7 +99,8 @@ function refresh(source: Source): Promise<Entry> {
       .then((items) => {
         const entry = { items: sanitize(items, source.id), fetchedAt: Date.now() };
         if (!entry.items.length) throw new Error(`${source.id}: no items`);
-        store.set(source.id, entry);
+        memory.set(source.id, entry);
+        writeShared(source.id, entry);
         return entry;
       })
       .finally(() => inflight.delete(source.id));
@@ -53,10 +109,23 @@ function refresh(source: Source): Promise<Entry> {
   return p;
 }
 
-/** Load a source, using cached data when fresh and stale data on failure. */
+const isFresh = (e: Entry | undefined): boolean => !!e && Date.now() - e.fetchedAt < SOURCE_TTL_MS;
+
+/**
+ * Load a source: fresh cached data if there is any, otherwise fetch it. If the
+ * fetch fails, fall back to the last good data with status 'stale' and its
+ * original fetch time.
+ */
 export async function loadSource(source: Source): Promise<SourceResult> {
-  const cached = store.get(source.id);
-  if (cached && Date.now() - cached.fetchedAt < SOURCE_TTL_MS) {
+  let cached = memory.get(source.id);
+  if (!isFresh(cached)) {
+    const fromShared = await readShared(source.id);
+    if (fromShared && (!cached || fromShared.fetchedAt > cached.fetchedAt)) {
+      cached = fromShared;
+      memory.set(source.id, fromShared);
+    }
+  }
+  if (cached && isFresh(cached)) {
     return { source, items: cached.items, status: 'ok', fetchedAt: cached.fetchedAt };
   }
   try {

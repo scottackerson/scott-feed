@@ -6,7 +6,15 @@ import type { Item, Source, SourceResult, TrendingItem } from './types';
 import { SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
 
 export type CardData =
-  | { kind: 'trending'; id: string; items: TrendingItem[]; fetchedAt?: number; sources: Source[] }
+  | {
+      kind: 'trending';
+      id: string;
+      items: TrendingItem[];
+      fetchedAt?: number;
+      sources: Source[];
+      /** Sources that couldn't be reached, so their stories are from an earlier fetch. */
+      staleSources: Source[];
+    }
   | { kind: 'source'; id: string; result: SourceResult; items: Item[] };
 
 /** Load everything the configured view needs, in parallel. */
@@ -49,6 +57,7 @@ export async function loadDashboard(cfg: ViewConfig, now = Date.now()): Promise<
           ),
           fetchedAt: fetched.length ? Math.min(...fetched) : undefined,
           sources: inputs.map((r) => r.source),
+          staleSources: inputs.filter((r) => r.status === 'stale').map((r) => r.source),
         },
       ];
     }

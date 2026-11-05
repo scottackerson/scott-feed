@@ -30,6 +30,7 @@ const times = cards
   .map((c) => (c.kind === 'trending' ? c.fetchedAt : c.result.fetchedAt))
   .filter((t): t is number => t !== undefined);
 const oldest = times.length ? Math.min(...times) : undefined;
+const anyStale = cards.some((c) => (c.kind === 'trending' ? c.staleSources.length > 0 : c.result.status === 'stale'));
 ---
 
 <!doctype html>
@@ -64,8 +65,8 @@ const oldest = times.length ? Math.min(...times) : undefined;
       <div class="status">
         {
           oldest && (
-            <span>
-              updated <time datetime={new Date(oldest).toISOString()} data-clock title="When the oldest card's data was fetched">{clockUtc(oldest)}</time>
+            <span class:list={{ stale: anyStale }}>
+              updated <time datetime={new Date(oldest).toISOString()} data-clock title={anyStale ? 'Not current: some sources could not be reached' : "When the oldest card's data was fetched"}>{clockUtc(oldest)}</time>
             </span>
           )
         }

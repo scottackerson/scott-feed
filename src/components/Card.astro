@@ -16,10 +16,13 @@ const about = isTrending ? undefined : card.result.source.about;
 const sortDescription = isTrending ? TRENDING_SORT_DESCRIPTION : card.result.source.sortDescription;
 const fetchedAt = isTrending ? card.fetchedAt : card.result.fetchedAt;
 const status = isTrending ? 'ok' : card.result.status;
+const staleNames = card.kind === 'trending' ? card.staleSources.map((s) => s.name) : [];
+const isStale = status === 'stale' || staleNames.length > 0;
+const list = (names: string[]) => names.join(', ').replace(/, ([^,]*)$/, ' and $1');
 const headingId = `h-${card.id}`;
 ---
 
-<section class:list={['card', { hot: isTrending }]} id={card.id} aria-labelledby={headingId}>
+<section class:list={['card', { hot: isTrending, stale: isStale }]} id={card.id} aria-labelledby={headingId}>
   <header>
     <h2 id={headingId}>
       {homepage ? <a href={homepage} target="_blank" rel="noopener noreferrer">{name}</a> : name}
@@ -40,14 +43,31 @@ const headingId = `h-${card.id}`;
     </details>
     {
       fetchedAt && (
-        <time datetime={new Date(fetchedAt).toISOString()} data-clock title="When this card's data was fetched">
+        <time
+          datetime={new Date(fetchedAt).toISOString()}
+          data-clock
+          title={isStale ? 'Not current: when this data was last fetched successfully' : "When this card's data was fetched"}
+        >
           {clockUtc(fetchedAt)}
         </time>
       )
     }
   </header>
 
-  {status === 'stale' && <p class="notice">Couldn't reach {name}. Showing the last good data.</p>}
+  {
+    status === 'stale' && (
+      <p class="notice stale-notice" role="status">
+        Couldn't reach {name}. Showing the last data we got, from the time above.
+      </p>
+    )
+  }
+  {
+    staleNames.length > 0 && (
+      <p class="notice stale-notice" role="status">
+        Couldn't reach {list(staleNames)}. {staleNames.length === 1 ? 'Its' : 'Their'} stories are from an earlier fetch.
+      </p>
+    )
+  }
 
   {
     card.items.length ? (

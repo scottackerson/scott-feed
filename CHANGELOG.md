@@ -12,6 +12,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
+- A source that stopped responding often showed "Unavailable right now", because the last good data lived only in one server instance's memory. It is now also kept for 7 days in Vercel's Runtime Cache (`@vercel/functions`), so the card keeps showing it with its original time, marked in red as not current. Trending and the top bar's "updated" time turn red too.
 - Card and page "updated" times always said "just now", because the age was fixed when the server built the page. They now show the clock time in your own time zone, and story ages ("3h") keep counting while the tab stays open.
 - On phones the whole page could scroll sideways: hidden screen-reader labels escaped the card strip and widened the page.
 
