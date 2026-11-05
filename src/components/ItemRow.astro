@@ -21,7 +21,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
 <li class="item">
   <span class="rank" aria-hidden="true">{String(rank).padStart(2, '0')}</span>
   <div class="body">
-    <a class="title" href={item.url} target="_blank" rel="noopener noreferrer">
+    <a class="title" href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
       {item.title}<span class="sr-only"> (opens in new tab)</span>
     </a>
     <div class="meta">
