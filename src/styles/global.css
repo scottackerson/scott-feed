@@ -156,8 +156,7 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .notice { margin: 0; padding: 12px 16px; color: var(--muted); font: 12px/1.4 var(--mono); }
 
 /* A source that couldn't be reached: its last data stays and its time turns red. */
-.card.stale > header time,
-.status .stale { color: var(--stale); }
+.card.stale > header time { color: var(--stale); }
 
 /* "How this card is sorted" — native <details>, works without JS. */
 .info summary {

@@ -25,12 +25,12 @@ Astro.response.headers.set('Cache-Control', PAGE_CACHE_CONTROL);
 const codeOf = (id: string) => (id === TRENDING_ID ? '★ TRENDING' : (SOURCE_BY_ID.get(id)?.code ?? id));
 const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.get(id)?.name ?? id));
 
-// Page-level freshness: the oldest data on the page.
+// Page-level freshness: the most recent successful fetch of any card on the page.
+// Cards that couldn't be refreshed show their own older time in red.
 const times = cards
   .map((c) => (c.kind === 'trending' ? c.fetchedAt : c.result.fetchedAt))
   .filter((t): t is number => t !== undefined);
-const oldest = times.length ? Math.min(...times) : undefined;
-const anyStale = cards.some((c) => (c.kind === 'trending' ? c.staleSources.length > 0 : c.result.status === 'stale'));
+const latest = times.length ? Math.max(...times) : undefined;
 ---
 
 <!doctype html>
@@ -64,9 +64,9 @@ const anyStale = cards.some((c) => (c.kind === 'trending' ? c.staleSources.lengt
       </nav>
       <div class="status">
         {
-          oldest && (
-            <span class:list={{ stale: anyStale }}>
-              updated <time datetime={new Date(oldest).toISOString()} data-clock title={anyStale ? 'Not current: some sources could not be reached' : "When the oldest card's data was fetched"}>{clockUtc(oldest)}</time>
+          latest && (
+            <span>
+              updated <time datetime={new Date(latest).toISOString()} data-clock title="Most recent successful fetch">{clockUtc(latest)}</time>
             </span>
           )
         }
