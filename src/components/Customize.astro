@@ -1,6 +1,6 @@
 ---
 import { MAX_ITEMS, MIN_ITEMS } from '../lib/config';
-import { countFor, type ViewConfig } from '../lib/params';
+import { countFor, THEMES, type ViewConfig } from '../lib/params';
 import { WINDOWS } from '../lib/time';
 import { ALL_CARDS, SOURCE_BY_ID, TRENDING_ID } from '../sources';
 
@@ -28,6 +28,12 @@ const sortsOf = (id: string) => SOURCE_BY_ID.get(id)?.sorts;
         Time window
         <select name="window">
           {Object.keys(WINDOWS).map((w) => <option value={w} selected={w === cfg.window}>{w}</option>)}
+        </select>
+      </label>
+      <label>
+        Theme
+        <select name="theme">
+          {THEMES.map((t) => <option value={t} selected={t === cfg.theme}>{t === 'auto' ? 'System' : t[0].toUpperCase() + t.slice(1)}</option>)}
         </select>
       </label>
     </div>

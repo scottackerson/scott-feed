@@ -1,6 +1,7 @@
 /*
  * "Ticker" — dense, terminal-flavored dashboard.
- * Dark by default; a light variant follows prefers-color-scheme.
+ * Dark by default; a light variant follows prefers-color-scheme, or the
+ * theme URL setting (data-theme on <html>) forces one.
  * System fonts only (no web fonts, no third-party requests).
  */
 
@@ -26,8 +27,32 @@
   color-scheme: dark;
 }
 
+/*
+ * Light palette. Applies when the URL forces it (theme=light), or in "auto"
+ * mode when the device prefers light. theme=dark keeps the dark defaults above.
+ * Keep the two blocks identical.
+ */
+:root[data-theme='light'] {
+  --bg: #eef0f3;
+  --panel: #ffffff;
+  --line: #d9dde3;
+  --line-soft: #eceef2;
+  --text: #111418;
+  --muted: #57606a;
+  --rank: #6a737d;
+  --visited: #6b5e8a;
+  --accent: #f5a524;
+  --accent-text: #9a5b00;
+  --stale: #c62828;
+  --on-accent: #111418;
+  --control: #f4f5f7;
+  --control-line: #cfd4db;
+  --shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  color-scheme: light;
+}
+
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme='dark']):not([data-theme='light']) {
     --bg: #eef0f3;
     --panel: #ffffff;
     --line: #d9dde3;

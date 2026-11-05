@@ -19,6 +19,7 @@ A fast, cookie-free dashboard of what's trending in tech and AI. Hacker News, Lo
 | `n.<id>` | `n.hn=30` | Per-card override (5–50) | — |
 | `sort.<id>` | `sort.hn=momentum` | Per-card sort order where offered. Hacker News: `front` (front-page order) or `momentum` (fastest-climbing stories of the last 24h) | default order |
 | `window` | `window=12h` | Max age: `6h` `12h` `24h` `48h` `7d` | `24h` |
+| `theme` | `theme=light` | `auto` (follow the device), `dark` or `light` | `auto` |
 
 Example: `/?cards=trending,hn,github&n=15&n.trending=30`
 

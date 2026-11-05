@@ -7,7 +7,7 @@ const p = (q: string) => new URLSearchParams(q);
 
 describe('parseParams', () => {
   it('returns defaults for an empty query', () => {
-    expect(parseParams(p(''), ALL)).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', sort: {} });
+    expect(parseParams(p(''), ALL)).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', theme: 'auto', sort: {} });
   });
 
   it('respects card order and drops unknown/duplicate ids', () => {
@@ -16,7 +16,7 @@ describe('parseParams', () => {
 
   it('falls back to defaults on garbage', () => {
     const cfg = parseParams(p('n=abc&cards=nope&window=1y&n.hn=x'), ALL);
-    expect(cfg).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', sort: {} });
+    expect(cfg).toEqual({ cards: ALL, n: 20, perCard: {}, window: '24h', theme: 'auto', sort: {} });
   });
 
   it('clamps item counts to 5..50', () => {
@@ -74,5 +74,14 @@ describe('sort modes', () => {
   it('reads the Customize select', () => {
     const cfg = parseForm(p('edit=1&show=hn&sort.hn=momentum'), ALL, SORTS);
     expect(toQuery(cfg, ALL)).toBe('cards=hn&sort.hn=momentum');
+  });
+});
+
+describe('theme', () => {
+  it('accepts dark/light, drops auto and garbage', () => {
+    expect(parseParams(p('theme=Dark'), ALL).theme).toBe('dark');
+    expect(toQuery(parseParams(p('theme=light&window=12h'), ALL), ALL)).toBe('window=12h&theme=light');
+    expect(toQuery(parseParams(p('theme=auto'), ALL), ALL)).toBe('');
+    expect(parseParams(p('theme=purple'), ALL).theme).toBe('auto');
   });
 });

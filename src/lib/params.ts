@@ -3,6 +3,12 @@ import { isWindowKey, type WindowKey } from './time';
 
 export const DEFAULT_WINDOW: WindowKey = '24h';
 
+/** Color theme: follow the device setting, or force one. */
+export const THEMES = ['auto', 'dark', 'light'] as const;
+export type Theme = (typeof THEMES)[number];
+export const DEFAULT_THEME: Theme = 'auto';
+const isTheme = (s: string): s is Theme => (THEMES as readonly string[]).includes(s);
+
 /** The full view configuration, derived entirely from the URL. */
 export interface ViewConfig {
   /** Card ids to show, in display order. */
@@ -12,6 +18,7 @@ export interface ViewConfig {
   /** Per-card item count overrides. */
   perCard: Record<string, number>;
   window: WindowKey;
+  theme: Theme;
   /** Per-card alternative sort order (mode id); absent means the default order. */
   sort: Record<string, string>;
 }
@@ -27,7 +34,7 @@ function parseCount(v: string | null): number | undefined {
 }
 
 export function defaultConfig(allCards: readonly string[]): ViewConfig {
-  return { cards: [...allCards], n: DEFAULT_ITEMS, perCard: {}, window: DEFAULT_WINDOW, sort: {} };
+  return { cards: [...allCards], n: DEFAULT_ITEMS, perCard: {}, window: DEFAULT_WINDOW, theme: DEFAULT_THEME, sort: {} };
 }
 
 /**
@@ -65,6 +72,9 @@ export function parseParams(
   const w = params.get('window');
   if (w && isWindowKey(w)) cfg.window = w;
 
+  const t = params.get('theme')?.trim().toLowerCase();
+  if (t && isTheme(t)) cfg.theme = t;
+
   for (const [id, opts] of Object.entries(sorts)) {
     const v = params.get(`sort.${id}`)?.trim().toLowerCase();
     // The default mode (e.g. sort.hn=front) is valid but canonicalizes away.
@@ -78,7 +88,7 @@ export function parseParams(
  * Parse the Customize form submission (`edit=1`). Fields:
  * - `show` (repeated): card ids to display
  * - `o.<id>`: numeric display order
- * - `n`, `n.<id>`, `window`, `sort.<id>`: as in the URL format
+ * - `n`, `n.<id>`, `window`, `theme`, `sort.<id>`: as in the URL format
  */
 export function parseForm(
   params: URLSearchParams,
@@ -112,6 +122,7 @@ export function toQuery(cfg: ViewConfig, allCards: readonly string[]): string {
   if (cfg.cards.join(',') !== allCards.join(',')) parts.push(`cards=${cfg.cards.join(',')}`);
   if (cfg.n !== DEFAULT_ITEMS) parts.push(`n=${cfg.n}`);
   if (cfg.window !== DEFAULT_WINDOW) parts.push(`window=${cfg.window}`);
+  if (cfg.theme !== DEFAULT_THEME) parts.push(`theme=${cfg.theme}`);
   for (const id of allCards) {
     const v = cfg.perCard[id];
     if (v !== undefined && v !== cfg.n) parts.push(`n.${id}=${v}`);

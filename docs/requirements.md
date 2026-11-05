@@ -90,7 +90,7 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 - **FR-3** Mobile (< 768px): cards are full-width and swipeable horizontally using CSS scroll-snap, with a sticky row of source chips that jump to each card through anchor links. This must work without JavaScript.
 - **FR-4** Each card header shows the source name, a link to the source's homepage, and the clock time its data was fetched, in the viewer's own time zone (for example "6:42 PM"). The server renders it in UTC ("00:42 UTC") and a small optional script, `public/local-time.js`, converts it. The top bar shows the most recent successful fetch of any card on the page; cards that couldn't be refreshed show their own older time in red. Story ages ("3h") stay relative, and the same script recounts them every minute so an open tab never shows stale ages.
 - **FR-4a** Each card header has an info button (ⓘ) that reveals, on click, a short blurb about the source website (`Source.about`) and a plain-language explanation of how that card is sorted (`Source.sortDescription`). It uses native `<details>` so it works without JavaScript. Every source must provide both texts. The Trending card shows only its sort explanation.
-- **FR-5** Visual style is "Ticker": dense, terminal-flavored, dark by default, with a light variant that follows `prefers-color-scheme`. There is no toggle, because a toggle would need stored state. Fonts are system stacks only (no web fonts).
+- **FR-5** Visual style is "Ticker": dense, terminal-flavored, dark by default, with a light variant that follows `prefers-color-scheme`. The `theme` URL setting (Customize → Theme: System, Dark or Light) can force either one; the server sets `data-theme` on `<html>`, so it needs no JavaScript or storage. Fonts are system stacks only (no web fonts).
 
 ### 6.2 Items
 
@@ -123,6 +123,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 | `n.<id>` | `n.hn=30&n.trending=40` | Per-card item count override | — |
 | `sort.<id>` | `sort.hn=momentum` | Per-card sort order, for cards that offer one (currently Hacker News: `front` or `momentum`) | the card's default order |
 | `window` | `window=12h` | Max item age (`6h`, `12h`, `24h`, `48h`, `7d`) | `24h` |
+| `theme` | `theme=light` | Color theme: `auto` follows the device's `prefers-color-scheme`; `dark` or `light` forces one | `auto` |
 
 - **FR-15** Invalid or unknown values are ignored and the default is used. The page must never error because of bad parameters.
 - **FR-16** Item counts are clamped between 5 and 50.

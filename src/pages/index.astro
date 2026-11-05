@@ -34,15 +34,26 @@ const latest = times.length ? Math.max(...times) : undefined;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={cfg.theme === 'auto' ? undefined : cfg.theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>scott-feed: trending tech news</title>
     <meta name="description" content="A fast, stateless dashboard of what's trending in tech." />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0d0f12" media="(prefers-color-scheme: dark)" />
+    {
+      cfg.theme === 'auto' ? (
+        <>
+          <meta name="color-scheme" content="light dark" />
+          <meta name="theme-color" content="#eef0f3" media="(prefers-color-scheme: light)" />
+          <meta name="theme-color" content="#0d0f12" media="(prefers-color-scheme: dark)" />
+        </>
+      ) : (
+        <>
+          <meta name="color-scheme" content={cfg.theme} />
+          <meta name="theme-color" content={cfg.theme === 'light' ? '#eef0f3' : '#0d0f12'} />
+        </>
+      )
+    }
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <script src="/copy-link.js" defer is:inline></script>

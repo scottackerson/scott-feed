@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Theme setting: `theme=dark` or `theme=light` (Customize → Theme) forces a color theme; the default, System, follows the device as before.
 - Hacker News "momentum" order (`sort.hn=momentum`, or the Sort column in Customize): stories from the last 24 hours ranked by points per hour, so fast-climbing stories rise to the top. Sources can now offer alternative orders per card.
 - Vercel Web Analytics via `@vercel/analytics` (cookieless, first-party page-view counts; production only). Scripts are never inlined (`assetsInlineLimit: 0`) so they pass the CSP.
 - New sources: Techmeme, r/LocalLLaMA, Hugging Face Daily Papers, Tildes ~tech, Simon Willison's Weblog and The New Stack.
