@@ -4,8 +4,6 @@
  * original article.
  *
  * CBS Sports is left out on purpose: its feed mixes in sportsbook promo posts.
- * So is ESPN's top-headlines feed: it repeats the league feeds below, and
- * Trending would count those repeats as separate sources agreeing.
  */
 import { rssSource } from './rss';
 
@@ -14,10 +12,21 @@ const espn = (id: string, name: string, code: string, league: string, path: stri
     id,
     name,
     code,
+    publisher: 'espn',
     about: `ESPN is an American sports media company. This card follows its ${league} headlines.`,
     homepage: `https://www.espn.com/${path}/`,
     feedUrl: `https://www.espn.com/espn/rss/${path}/news`,
   });
+
+export const espnTop = rssSource({
+  id: 'espn',
+  name: 'ESPN',
+  code: 'ESPN',
+  publisher: 'espn',
+  about: 'ESPN is an American sports media company. This card follows its top headlines.',
+  homepage: 'https://www.espn.com/',
+  feedUrl: 'https://www.espn.com/espn/rss/news',
+});
 
 export const espnNfl = espn('nfl', 'NFL', 'NFL', 'NFL', 'nfl');
 export const espnNba = espn('nba', 'NBA', 'NBA', 'NBA', 'nba');

@@ -109,3 +109,92 @@ describe('headline matching', () => {
     expect(out).toHaveLength(2);
   });
 });
+
+describe('scoring signals', () => {
+  const story = (source: string, title: string, age = 1, path = title): Item => ({
+    id: `${source}-${path}`, source, title, url: `https://${source}.example/${encodeURIComponent(path)}`, publishedAt: hoursAgo(age),
+  });
+  const SAME = 'Senate passes spending bill to avert shutdown';
+  const SOLO = 'Completely unrelated solitary headline about gardening tools today';
+
+  it('gives time-ordered feeds one baseline, so feed position does not matter', () => {
+    const items = [story('rss', 'First story in feed', 1), story('rss', 'Second story in feed', 1)];
+    const out = buildTrending([{ hasScore: false, items }], 10, NOW);
+    expect(out[0].heat).toBeCloseTo(out[1].heat);
+  });
+
+  it('keeps position for popularity-ordered feeds', () => {
+    const items = Array.from({ length: 10 }, (_, i) => story('reddit', `Post number ${i} words`, 1));
+    const out = buildTrending([{ hasScore: false, rankedFeed: true, items }], 10, NOW);
+    expect(out[0].item.title).toBe('Post number 0 words');
+    expect(out[0].heat).toBeGreaterThan(out[9].heat);
+  });
+
+  it('counts the top of a short list for less than the top of a full one', () => {
+    const list = (source: string, n: number) => Array.from({ length: n }, (_, i) => ({ ...story(source, `${source} item ${i}`, 1), score: 100 - i }));
+    const out = buildTrending([{ hasScore: true, items: list('short', 2) }, { hasScore: true, items: list('full', 20) }], 40, NOW);
+    expect(out[0].item.source).toBe('full');
+  });
+
+  it('counts feeds from one publisher once', () => {
+    const shared = 'https://espn.example/shared';
+    const a = { ...story('nfl', SAME), url: shared };
+    const b = { ...story('espn', SAME), url: shared };
+    const one = buildTrending([{ hasScore: false, publisher: 'espn', items: [a] }, { hasScore: false, publisher: 'espn', items: [b] }], 5, NOW);
+    const two = buildTrending([{ hasScore: false, items: [a] }, { hasScore: false, items: [b] }], 5, NOW);
+    expect(one[0].appearances).toHaveLength(2);
+    expect(two[0].heat / one[0].heat).toBeCloseTo(1.5);
+  });
+
+  it('counts a social source for less, whichever source leads', () => {
+    const news = story('bbc', SAME);
+    const social = { ...story('bsky', SAME), url: news.url };
+    const out = buildTrending([{ hasScore: false, items: [news] }, { hasScore: false, social: true, items: [social] }], 5, NOW);
+    const alone = buildTrending([{ hasScore: false, items: [news] }], 5, NOW);
+    expect(out[0].heat / alone[0].heat).toBeCloseTo(1.2);
+  });
+
+  it('boosts and labels stories covered by left and right', () => {
+    const l = story('left', SAME);
+    const r = { ...story('right', SAME), url: l.url };
+    const mixed = buildTrending([{ hasScore: false, lean: 'left', items: [l] }, { hasScore: false, lean: 'right', items: [r] }], 5, NOW);
+    const same = buildTrending([{ hasScore: false, lean: 'left', items: [l] }, { hasScore: false, lean: 'left', items: [r] }], 5, NOW);
+    expect(mixed[0].spectrum).toBe('both');
+    expect(same[0].spectrum).toBe('left');
+    expect(mixed[0].heat / same[0].heat).toBeCloseTo(1.25);
+  });
+
+  it('does not call a single outlet one-sided', () => {
+    expect(buildTrending([{ hasScore: false, lean: 'right', items: [story('r', SOLO)] }], 5, NOW)[0].spectrum).toBeUndefined();
+  });
+
+  it('caps solo stories per publisher in each block of ranks', () => {
+    const flood = Array.from({ length: 12 }, (_, i) => ({ ...story('flood', `Flood story ${i}`, 1), score: 100 - i }));
+    const others = Array.from({ length: 12 }, (_, i) => story(`other${i}`, `Other story ${i}`, 20));
+    const out = buildTrending([{ hasScore: true, items: flood }, ...others.map((o) => ({ hasScore: false, items: [o] }))], 10, NOW);
+    expect(out.filter((s) => s.item.source === 'flood')).toHaveLength(3);
+  });
+
+  it('never caps stories several publishers cover', () => {
+    const titles = ['Alpha merger talks collapse amid regulator concerns', 'Beta rocket launch delayed after engine fault found', 'Gamma vaccine trial results exceed researcher expectations', 'Delta strike ends after union accepts final offer'];
+    const a = titles.map((t) => story('a', t));
+    const b = titles.map((t) => ({ ...story('b', t), url: story('a', t).url }));
+    expect(buildTrending([{ hasScore: false, items: a }, { hasScore: false, items: b }], 10, NOW)).toHaveLength(4);
+  });
+
+  it('explains placement', () => {
+    const a = story('a', SAME);
+    const b = { ...story('b', SAME), url: a.url };
+    const out = buildTrending([{ hasScore: false, name: 'NPR', items: [a] }, { hasScore: false, name: 'BBC', items: [b] }], 5, NOW);
+    expect(out[0].why).toContain('Covered by');
+    expect(out[0].why).toContain('NPR');
+    expect(out[0].why).toContain('BBC');
+  });
+
+  it('names the source a rank comes from', () => {
+    const a = { ...story('hn', SAME), score: 10 };
+    const b = { ...story('bbc', SAME), url: a.url };
+    const out = buildTrending([{ hasScore: true, name: 'Hacker News', items: [a] }, { hasScore: false, name: 'BBC', items: [b] }], 5, NOW);
+    expect(out[0].why).toContain('Ranked #1 of 1 on Hacker News.');
+  });
+});

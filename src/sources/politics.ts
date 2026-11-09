@@ -29,6 +29,7 @@ export const memeorandum: Source = {
 
 export const politico = rssSource({
   id: 'politico',
+  lean: 'center',
   name: 'Politico',
   code: 'POL',
   about: 'Politico is a Washington-focused political news organization founded in 2007. Generally regarded as centrist or nonpartisan.',
@@ -38,6 +39,7 @@ export const politico = rssSource({
 
 export const thehill = rssSource({
   id: 'thehill',
+  lean: 'center',
   name: 'The Hill',
   code: 'HILL',
   about: 'The Hill is a Washington news outlet covering Congress, the White House and campaigns. Generally regarded as centrist or nonpartisan.',
@@ -47,6 +49,7 @@ export const thehill = rssSource({
 
 export const rollcall = rssSource({
   id: 'rollcall',
+  lean: 'center',
   name: 'Roll Call',
   code: 'RC',
   about: 'Roll Call is a newspaper and website covering the US Congress, founded in 1955. Generally regarded as nonpartisan.',
@@ -56,6 +59,7 @@ export const rollcall = rssSource({
 
 export const guardianPolitics = rssSource({
   id: 'guardianpolitics',
+  lean: 'left',
   name: 'Guardian US Politics',
   code: 'GRD',
   about: "This card follows The Guardian's US politics coverage. The British newspaper is generally regarded as left-leaning.",
@@ -65,6 +69,7 @@ export const guardianPolitics = rssSource({
 
 export const motherjones = rssSource({
   id: 'motherjones',
+  lean: 'left',
   name: 'Mother Jones',
   code: 'MJ',
   about: 'Mother Jones is a nonprofit American magazine known for investigative reporting. Generally regarded as left-leaning.',
@@ -74,6 +79,7 @@ export const motherjones = rssSource({
 
 export const thenation = rssSource({
   id: 'thenation',
+  lean: 'left',
   name: 'The Nation',
   code: 'NAT',
   about: 'The Nation is an American magazine of politics and culture founded in 1865. Generally regarded as left-leaning.',
@@ -83,6 +89,7 @@ export const thenation = rssSource({
 
 export const foxPolitics = rssSource({
   id: 'foxpolitics',
+  lean: 'right',
   name: 'Fox News Politics',
   code: 'FOX',
   about: "This card follows Fox News's politics coverage. The American cable network is generally regarded as right-leaning.",
@@ -92,6 +99,7 @@ export const foxPolitics = rssSource({
 
 export const nationalreview = rssSource({
   id: 'nationalreview',
+  lean: 'right',
   name: 'National Review',
   code: 'NR',
   about: 'National Review is an American magazine of news and opinion founded in 1955. Generally regarded as right-leaning.',
@@ -101,6 +109,7 @@ export const nationalreview = rssSource({
 
 export const examiner = rssSource({
   id: 'examiner',
+  lean: 'right',
   name: 'Washington Examiner',
   code: 'WEX',
   about: 'The Washington Examiner is an American news and opinion outlet based in Washington, DC. Generally regarded as right-leaning.',

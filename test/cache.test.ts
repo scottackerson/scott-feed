@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearMemoryCache, loadSource } from '../src/lib/cache';
-import { SOURCE_TTL_MS } from '../src/lib/config';
+import { FAILURE_COOLDOWN_MS, SOURCE_TTL_MS } from '../src/lib/config';
 import type { Item, Source } from '../src/lib/types';
 
 const item: Item = { id: '1', title: 'Hello', url: 'https://a.com', publishedAt: '2026-11-04T00:00:00Z', source: 'x' };
@@ -76,6 +76,50 @@ describe('loadSource', () => {
     expect(b.items[0].source).toBe('two-orders');
     expect(b.sort?.id).toBe('alt');
     expect(a.sort).toBeUndefined();
+  });
+
+  it('does not contact a failing source again during the cooldown', async () => {
+    const fetch = vi.fn(async (): Promise<Item[]> => {
+      throw new Error('429');
+    });
+    const src = fakeSource('cooling', fetch);
+    expect((await loadSource(src)).status).toBe('error');
+    vi.advanceTimersByTime(FAILURE_COOLDOWN_MS - 1);
+    expect((await loadSource(src)).status).toBe('error');
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(2);
+    await loadSource(src);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps serving last good data during the cooldown, then recovers', async () => {
+    let up = true;
+    const fetch = vi.fn(async () => {
+      if (!up) throw new Error('down');
+      return [item];
+    });
+    const src = fakeSource('cooling-stale', fetch);
+    const first = await loadSource(src);
+    up = false;
+    vi.advanceTimersByTime(SOURCE_TTL_MS + 1);
+    await loadSource(src);
+    const during = await loadSource(src);
+    expect(during).toMatchObject({ status: 'stale', fetchedAt: first.fetchedAt });
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    up = true;
+    vi.advanceTimersByTime(FAILURE_COOLDOWN_MS + 1);
+    expect((await loadSource(src)).status).toBe('ok');
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('cools down each sort order separately', async () => {
+    const fetch = vi.fn(async () => [item]);
+    const src = fakeSource('cooling-orders', fetch);
+    const alt = { id: 'alt', label: 'Alt', sortDescription: '', fetch: () => Promise.reject(new Error('down')) };
+    expect((await loadSource(src, alt)).status).toBe('error');
+    expect((await loadSource(src)).status).toBe('ok');
   });
 
   it('reports an error when there is no earlier data', async () => {

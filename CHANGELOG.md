@@ -11,12 +11,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Trending scoring: plain RSS feeds no longer get credit for recency twice, short lists count for less, feeds from one publisher count once, social sources count less toward coverage, and one publisher can't fill the list. Politics stories are labeled and boosted by left and right coverage, and every Trending row has a "why" link.
 - Trending now merges stories with closely matching headlines from different sources, not just identical URLs.
 - New "Ticker" look: dense, dark-first layout with monospace labels, numbered rows, short source codes and a light variant that follows the system theme. Customize moved into a dropdown in the top bar.
 - Hacker News card now matches the real front-page order (via the official `topstories.json`), falling back to points order.
 
 ### Fixed
 
+- A failing source was fetched again on every page render, which could prolong Reddit's rate limiting. It now waits 5 minutes between attempts.
 - A source that stopped responding often showed "Unavailable right now", because the last good data lived only in one server instance's memory. It is now also kept for 7 days in Vercel's Runtime Cache (`@vercel/functions`), so the card keeps showing it with its original time, with its time in red to show it isn't current. Trending's time turns red too. The top bar's "updated" time now shows the most recent successful fetch instead of the oldest.
 - Card and page "updated" times always said "just now", because the age was fixed when the server built the page. They now show the clock time in your own time zone, and story ages ("3h") keep counting while the tab stays open.
 - On phones the whole page could scroll sideways: hidden screen-reader labels escaped the card strip and widened the page.
