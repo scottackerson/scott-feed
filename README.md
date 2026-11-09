@@ -1,6 +1,6 @@
 # scott-feed
 
-A fast, cookie-free dashboard of what's trending, organized into topic sections: Tech at `/` and News at `/news`. The Tech section covers Hacker News, Lobsters, Techmeme, Reddit, r/LocalLLaMA, GitHub Trending, Hugging Face Daily Papers, Product Hunt, dev.to, Tildes, Bluesky, Mastodon, Simon Willison, TechCrunch, The Verge, Ars Technica and The New Stack, all on one page.
+A fast, cookie-free dashboard of what's trending, organized into topic sections: Tech at `/`, plus `/news`, `/politics`, `/healthcare`, `/sports` and `/3d-printing`. The Tech section covers Hacker News, Lobsters, Techmeme, Reddit, r/LocalLLaMA, GitHub Trending, Hugging Face Daily Papers, Product Hunt, dev.to, Tildes, Bluesky, Mastodon, Simon Willison, TechCrunch, The Verge, Ars Technica and The New Stack, all on one page.
 
 - **One card per source**, plus a **Trending** card per section that blends and dedupes the hottest stories in that section.
 - **Stateless.** No accounts, cookies or local storage. Your configuration lives in the URL, so just bookmark it.
@@ -29,6 +29,14 @@ All settings stay in the URL when you switch section tabs, so one bookmark holds
 Tech card IDs: `trending`, `hn`, `lobsters`, `techmeme`, `reddit`, `localllama`, `github`, `hfpapers`, `producthunt`, `devto`, `tildes`, `bluesky`, `mastodon`, `simonw`, `techcrunch`, `verge`, `ars`, `newstack`.
 
 News card IDs: `trending`, `nyt`, `npr`, `bbc`, `guardian`, `cbs`, `fox`, `aljazeera`, `redditnews`.
+
+Politics card IDs: `trending`, `memeorandum`, `politico`, `thehill`, `rollcall`, `guardianpolitics`, `motherjones`, `thenation`, `foxpolitics`, `nationalreview`, `examiner`.
+
+Healthcare card IDs: `trending`, `healthcaredive`, `beckerspayer`, `beckershospital`, `histalk`, `hitconsultant`, `statnews`, `medcity`, `biopharmadive`, `pharmavoice`, `clinicaltrials`, `cmsrules`, `fda`, `kff`.
+
+Sports card IDs: `trending`, `nfl`, `nba`, `mlb`, `nhl`, `soccer`, `yahoosports`, `bbcsport`, `guardiansport`.
+
+3D Printing card IDs: `trending`, `3dprintcom`, `3dpi`, `tct`, `reddit3d`.
 
 ## Quick start
 

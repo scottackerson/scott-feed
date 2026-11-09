@@ -243,6 +243,8 @@ footer a { text-decoration: underline; }
   /* Tabs share the title row, scrolling sideways, so the sticky header doesn't grow. */
   .sections { flex: 1 1 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
   .sections::-webkit-scrollbar { display: none; }
+  /* Keep the current section visible without scripting the scroll position. */
+  .sections a[aria-current='page'] { order: -1; }
   .customize { flex: none; }
   .chips { order: 3; flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
   .chips a { padding: 10px 12px; background: var(--control); }

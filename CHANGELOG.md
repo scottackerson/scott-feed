@@ -7,7 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
-- Topic sections, with tabs in the top bar. Tech stays at `/`, and a new News section is at `/news`. Each section has its own Trending card, and all settings carry across tabs (`cards.<section>` holds a section's card list).
+- Topic sections, with tabs in the top bar. Tech stays at `/`, with new sections at `/news`, `/politics`, `/healthcare`, `/sports` and `/3d-printing`. Each section has its own Trending card, and all settings carry across tabs (`cards.<section>` holds a section's card list).
 
 ### Changed
 

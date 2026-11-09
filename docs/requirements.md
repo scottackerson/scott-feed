@@ -137,6 +137,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 - **FR-19a** The site is divided into topic sections, defined in the registry at `src/sources/index.ts`. The first section (Tech) is at `/`; each other section is at `/<slug>`. `/tech` redirects to `/`, and an unknown path returns 404.
 - **FR-19b** A source can belong to several sections. Each section has its own Trending card, built only from that section's sources, and a page fetches only its own section.
 - **FR-19c** Section tabs carry the whole query string, and the Customize form preserves other sections' settings, so one URL holds the full setup. Tabs appear only when more than one section exists.
+- **FR-19d** Sections: Tech, News, Politics, Healthcare, Sports and 3D Printing. Politics keeps an equal number of left- and right-leaning sources at equal Trending weight, and each of its cards states the outlet's lean in its info box. Sports is headlines only, without live scores. Healthcare covers industry and policy (payer, clinical, life sciences, regulation, public health). The source list is in `src/sources/`.
 
 ### 6.5 Failure handling
 

@@ -15,6 +15,35 @@ import mastodon from './mastodon';
 import { aljazeera, bbc, cbs, fox, guardian, npr, nyt, redditNews } from './news';
 import producthunt from './producthunt';
 import hfpapers from './hfpapers';
+import {
+  beckershospital,
+  beckerspayer,
+  biopharmadive,
+  clinicaltrials,
+  cmsRules,
+  fda,
+  healthcaredive,
+  histalk,
+  hitconsultant,
+  kff,
+  medcity,
+  pharmavoice,
+  statnews,
+} from './healthcare';
+import {
+  examiner,
+  foxPolitics,
+  guardianPolitics,
+  memeorandum,
+  motherjones,
+  nationalreview,
+  politico,
+  rollcall,
+  thehill,
+  thenation,
+} from './politics';
+import { printingIndustry, reddit3d, tct, threedprint } from './printing';
+import { bbcSport, espnMlb, espnNba, espnNfl, espnNhl, espnSoccer, guardianSport, yahooSports } from './sports';
 import { ars, newstack, techcrunch, verge } from './publishers';
 import reddit, { localllama } from './reddit';
 import simonw from './simonw';
@@ -57,6 +86,48 @@ export const SECTIONS: Section[] = [
     title: 'scott-feed: trending news',
     description: "A fast, stateless dashboard of today's top news.",
     sources: [nyt, npr, bbc, guardian, cbs, fox, aljazeera, redditNews],
+  },
+  {
+    slug: 'politics',
+    name: 'Politics',
+    title: 'scott-feed: trending politics',
+    description: "A fast, stateless dashboard of today's US political news from across the spectrum.",
+    sources: [memeorandum, politico, thehill, rollcall, guardianPolitics, motherjones, thenation, foxPolitics, nationalreview, examiner],
+  },
+  {
+    slug: 'healthcare',
+    name: 'Healthcare',
+    title: 'scott-feed: trending healthcare news',
+    description: 'A fast, stateless dashboard of healthcare industry and policy news.',
+    sources: [
+      healthcaredive,
+      beckerspayer,
+      beckershospital,
+      histalk,
+      hitconsultant,
+      statnews,
+      medcity,
+      biopharmadive,
+      pharmavoice,
+      clinicaltrials,
+      cmsRules,
+      fda,
+      kff,
+    ],
+  },
+  {
+    slug: 'sports',
+    name: 'Sports',
+    title: 'scott-feed: trending sports news',
+    description: "A fast, stateless dashboard of today's major-league sports headlines.",
+    sources: [espnNfl, espnNba, espnMlb, espnNhl, espnSoccer, yahooSports, bbcSport, guardianSport],
+  },
+  {
+    slug: '3d-printing',
+    name: '3D Printing',
+    title: 'scott-feed: trending 3D printing news',
+    description: 'A fast, stateless dashboard of 3D printing news and community posts.',
+    sources: [threedprint, printingIndustry, tct, reddit3d],
   },
 ];
 
