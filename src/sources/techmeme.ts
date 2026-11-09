@@ -10,7 +10,8 @@ import { parseFeed, toIso } from '../lib/feed';
 import { getText } from '../lib/http';
 import type { Item, Source } from '../lib/types';
 
-export function parse(xml: string): Item[] {
+/** Also parses Memeorandum, Techmeme's sister site, which has the same feed format. */
+export function parse(xml: string, sourceId = 'techmeme'): Item[] {
   return parseFeed(xml).map((e) => {
     const article = e.content?.match(/<B>\s*<A HREF="([^"]+)"/i)?.[1];
     return {
@@ -20,7 +21,7 @@ export function parse(xml: string): Item[] {
       url: article ? decodeEntities(article) : e.link,
       discussionUrl: e.link,
       publishedAt: toIso(e.published) ?? '',
-      source: 'techmeme',
+      source: sourceId,
     };
   });
 }
