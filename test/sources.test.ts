@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { parse as bluesky } from '../src/sources/bluesky';
 import { parse as devto } from '../src/sources/devto';
 import { parse as github } from '../src/sources/github';
@@ -11,7 +11,7 @@ import { parse as producthunt } from '../src/sources/producthunt';
 import { localllama, parse as reddit } from '../src/sources/reddit';
 import { parse as techmeme } from '../src/sources/techmeme';
 import { parse as tildes } from '../src/sources/tildes';
-import { parseRss } from '../src/sources/rss';
+import { parseRss, rssSource } from '../src/sources/rss';
 
 const fx = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');
 const json = (name: string) => JSON.parse(fx(name));
@@ -144,5 +144,20 @@ describe('source parsers', () => {
       comments: 3,
       publishedAt: '2026-11-04T19:31:51.000Z',
     });
+  });
+});
+
+describe('rssSource excludeUrl', () => {
+  it('drops items whose URL matches', async () => {
+    const entry = (path: string) =>
+      `<item><title>${path}</title><link>https://example.com/${path}</link><pubDate>Mon, 09 Nov 2026 12:00:00 GMT</pubDate></item>`;
+    const xml = `<rss><channel>${entry('betting/promo')}${entry('world/story')}</channel></rss>`;
+    vi.stubGlobal('fetch', async () => new Response(xml));
+    try {
+      const source = rssSource({ id: 'x', name: 'X', code: 'X', about: '', homepage: 'https://example.com/', feedUrl: 'https://example.com/feed', excludeUrl: /\/betting\// });
+      expect((await source.fetch()).map((i) => i.url)).toEqual(['https://example.com/world/story']);
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });
