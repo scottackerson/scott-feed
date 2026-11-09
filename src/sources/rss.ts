@@ -3,7 +3,7 @@
  */
 import { parseFeed, toIso } from '../lib/feed';
 import { getText } from '../lib/http';
-import type { Item, Source } from '../lib/types';
+import type { Item, Lean, Source } from '../lib/types';
 
 export function parseRss(xml: string, sourceId: string): Item[] {
   return parseFeed(xml).map((e) => ({
@@ -24,9 +24,11 @@ export interface RssSourceOptions {
   feedUrl: string;
   /** Drop items whose URL matches, e.g. a publisher's sponsored section. */
   excludeUrl?: RegExp;
+  publisher?: string;
+  lean?: Lean;
 }
 
-export function rssSource({ id, name, code, about, homepage, feedUrl, excludeUrl }: RssSourceOptions): Source {
+export function rssSource({ id, name, code, about, homepage, feedUrl, excludeUrl, publisher, lean }: RssSourceOptions): Source {
   return {
     id,
     name,
@@ -34,6 +36,8 @@ export function rssSource({ id, name, code, about, homepage, feedUrl, excludeUrl
     about,
     homepage,
     hasScore: false,
+    publisher,
+    lean,
     sortDescription: `Newest first, as listed in ${name}'s RSS feed.`,
     fetch: async () => {
       const items = parseRss(await getText(feedUrl, 'application/rss+xml, application/atom+xml, application/xml'), id);

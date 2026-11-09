@@ -28,6 +28,11 @@ export interface SortMode {
   fetch(): Promise<Item[]>;
 }
 
+export type Lean = 'left' | 'center' | 'right';
+
+/** Who is covering a story: both sides, or at least two outlets on only one side. */
+export type Spectrum = 'both' | 'left' | 'right';
+
 /** A news source adapter. One module per source in `src/sources/`. */
 export interface Source {
   /** Short, URL-safe id used in query params, e.g. "hn". */
@@ -59,6 +64,14 @@ export interface Source {
    * card's info button. Required so every card can explain itself.
    */
   sortDescription: string;
+  /** Unscored, but the feed's order does reflect popularity (e.g. Reddit "hot"). */
+  rankedFeed?: boolean;
+  /** Groups feeds from one organization, so they count once when stories are boosted for coverage. */
+  publisher?: string;
+  /** Social platform: its agreement counts for less than a newsroom's in Trending. */
+  social?: boolean;
+  /** Political lean, for sources in the Politics section. */
+  lean?: Lean;
   /** Label for the score, e.g. "points". */
   scoreLabel?: string;
   /** Fetch items in the source's native order. Throw on failure. */
@@ -104,4 +117,7 @@ export interface TrendingItem {
   heat: number;
   /** All appearances, one per source, best first. */
   appearances: Item[];
+  /** Plain-language reason for the story's place in the list. */
+  why: string;
+  spectrum?: Spectrum;
 }

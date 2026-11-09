@@ -1,5 +1,5 @@
 import { getCache, type RuntimeCache } from '@vercel/functions';
-import { LAST_GOOD_TTL_S, SHARED_CACHE_TIMEOUT_MS, SOURCE_TTL_MS } from './config';
+import { FAILURE_COOLDOWN_MS, LAST_GOOD_TTL_S, SHARED_CACHE_TIMEOUT_MS, SOURCE_TTL_MS } from './config';
 import { isHttpUrl } from './normalize-url';
 import type { Item, Source, SortMode, SourceResult } from './types';
 
@@ -21,6 +21,8 @@ interface Entry {
  */
 const memory = new Map<string, Entry>();
 const inflight = new Map<string, Promise<Entry>>();
+/** When each failing source last failed. Per instance, like `memory`. */
+const failedAt = new Map<string, number>();
 
 let shared: RuntimeCache | null | undefined;
 function sharedCache(): RuntimeCache | null {
@@ -68,6 +70,7 @@ function writeShared(key: string, entry: Entry): void {
 /** Test hook: forget this instance's memory, as a brand-new instance would. */
 export function clearMemoryCache(): void {
   memory.clear();
+  failedAt.clear();
 }
 
 const MAX_TITLE = 300;
@@ -113,7 +116,8 @@ const isFresh = (e: Entry | undefined): boolean => !!e && Date.now() - e.fetched
 /**
  * Load a source: fresh cached data if there is any, otherwise fetch it. If the
  * fetch fails, fall back to the last good data with status 'stale' and its
- * original fetch time.
+ * original fetch time, and leave that source alone for FAILURE_COOLDOWN_MS so a
+ * site that is failing or rate-limiting us isn't asked again on every render.
  */
 export async function loadSource(source: Source, sort?: SortMode): Promise<SourceResult> {
   // Each order is cached separately: "hn" and "hn~momentum" are different lists.
@@ -130,12 +134,17 @@ export async function loadSource(source: Source, sort?: SortMode): Promise<Sourc
   if (cached && isFresh(cached)) {
     return { ...base, items: cached.items, status: 'ok', fetchedAt: cached.fetchedAt };
   }
+  const notRetried = (): SourceResult =>
+    cached ? { ...base, items: cached.items, status: 'stale', fetchedAt: cached.fetchedAt } : { ...base, items: [], status: 'error' };
+  const lastFailure = failedAt.get(key);
+  if (lastFailure !== undefined && Date.now() - lastFailure < FAILURE_COOLDOWN_MS) return notRetried();
   try {
     const fresh = await refresh(key, source.id, sort ? () => sort.fetch() : () => source.fetch());
+    failedAt.delete(key);
     return { ...base, items: fresh.items, status: 'ok', fetchedAt: fresh.fetchedAt };
   } catch (err) {
+    failedAt.set(key, Date.now());
     console.error(`[scott-feed] source "${key}" failed:`, err instanceof Error ? err.message : err);
-    if (cached) return { ...base, items: cached.items, status: 'stale', fetchedAt: cached.fetchedAt };
-    return { ...base, items: [], status: 'error' };
+    return notRetried();
   }
 }

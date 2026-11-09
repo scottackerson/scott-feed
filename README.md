@@ -63,7 +63,7 @@ Import the repo in [Vercel](https://vercel.com/new). No environment variables ar
 - Each source is a small adapter in [`src/sources/`](src/sources/) that fetches and parses one API or feed on the server.
 - Results are cached for 10 minutes (in memory, plus Vercel's Runtime Cache shared across function instances), and rendered pages are cached at Vercel's edge (`s-maxage=600, stale-while-revalidate`). Visitors almost always get a cached page.
 - If a source fails, its card keeps the last good data (up to 7 days old) with its original time, marked in red. The rest of the page is unaffected.
-- Trending converts each source's ranking to a 0–1 percentile, decays it by age, merges stories with the same URL or a closely matching headline, and boosts stories found on several sources. Constants live in [`src/lib/config.ts`](src/lib/config.ts).
+- Trending scores stories by rank where a source has votes or a popularity order, decays them by age, merges stories with the same URL or a closely matching headline, boosts stories covered by several publishers, and caps how many solo stories one publisher can place. Constants live in [`src/lib/config.ts`](src/lib/config.ts).
 
 ## Contributing
 

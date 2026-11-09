@@ -48,6 +48,10 @@ export function redditSource({ id, name, code, aboutCard, subreddits }: RedditOp
     about: `Reddit is a large network of topic-based communities (subreddits) where members post links and discussions and vote them up or down. ${aboutCard}`,
     homepage: `https://www.reddit.com/${path}/`,
     hasScore: false,
+    // Reddit's "hot" order reflects votes even though the feed omits them.
+    rankedFeed: true,
+    publisher: 'reddit',
+    social: true,
     sortDescription:
       subreddits.length > 1
         ? `Reddit's "hot" order across ${list(subreddits)} combined. Vote counts aren't available in Reddit's feed.`

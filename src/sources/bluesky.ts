@@ -53,6 +53,7 @@ const source: Source = {
     "Bluesky is a decentralized social network built on the AT Protocol. This card reads \"Tech by Flipboard\", a public Bluesky feed of tech news links.",
   homepage: 'https://bsky.app/profile/did:plc:cndfx4udwgvpjaakvxvh7wm5/feed/flipboard-tech',
   hasScore: true,
+  social: true,
   scoreLabel: 'likes+reposts',
   sortDescription: "Order chosen by the \"Tech by Flipboard\" Bluesky feed, usually newest first. Only posts that link to an article are shown.",
   // Feed is broad and fast-moving; scores are small. Keep it from flooding Trending.

@@ -43,7 +43,7 @@ import {
   thenation,
 } from './politics';
 import { printingIndustry, reddit3d, tct, threedprint } from './printing';
-import { bbcSport, espnMlb, espnNba, espnNfl, espnNhl, espnSoccer, guardianSport, yahooSports } from './sports';
+import { bbcSport, espnMlb, espnNba, espnNfl, espnNhl, espnSoccer, espnTop, guardianSport, yahooSports } from './sports';
 import { ars, newstack, techcrunch, verge } from './publishers';
 import reddit, { localllama } from './reddit';
 import simonw from './simonw';
@@ -120,7 +120,7 @@ export const SECTIONS: Section[] = [
     name: 'Sports',
     title: 'scott-feed: trending sports news',
     description: "A fast, stateless dashboard of today's major-league sports headlines.",
-    sources: [espnNfl, espnNba, espnMlb, espnNhl, espnSoccer, yahooSports, bbcSport, guardianSport],
+    sources: [espnTop, espnNfl, espnNba, espnMlb, espnNhl, espnSoccer, yahooSports, bbcSport, guardianSport],
   },
   {
     slug: '3d-printing',

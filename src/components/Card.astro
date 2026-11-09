@@ -68,7 +68,7 @@ const headingId = `h-${card.id}`;
     card.items.length ? (
       <ol>
         {card.kind === 'trending'
-          ? card.items.map((t, i) => <ItemRow item={t.item} rank={i + 1} appearances={t.appearances} />)
+          ? card.items.map((t, i) => <ItemRow item={t.item} rank={i + 1} appearances={t.appearances} why={t.why} spectrum={t.spectrum} />)
           : card.items.map((it, i) => <ItemRow item={it} rank={i + 1} scoreLabel={card.result.source.scoreLabel} />)}
       </ol>
     ) : (

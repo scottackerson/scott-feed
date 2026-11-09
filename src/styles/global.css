@@ -222,6 +222,12 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .meta a:hover { color: var(--text); }
 .badges { display: inline-flex; gap: 4px; }
 .badge { color: var(--muted); }
+.spectrum { color: var(--accent-text); }
+.why summary { list-style: none; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.why summary::-webkit-details-marker { display: none; }
+.why[open] { flex-basis: 100%; }
+.why[open] summary { color: var(--accent-text); }
+.why > span { display: block; margin-top: 2px; font-family: var(--sans); color: var(--text); }
 
 footer { padding: 16px var(--gutter) 24px; font: 11px/1.5 var(--mono); color: var(--muted); }
 footer a { text-decoration: underline; }

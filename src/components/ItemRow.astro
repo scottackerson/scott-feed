@@ -1,7 +1,7 @@
 ---
 import { domainOf } from '../lib/normalize-url';
 import { relativeAge } from '../lib/time';
-import type { Item } from '../lib/types';
+import type { Item, Spectrum } from '../lib/types';
 import { SOURCE_BY_ID } from '../sources';
 
 interface Props {
@@ -10,9 +10,13 @@ interface Props {
   /** For Trending: every source this story appeared on. */
   appearances?: Item[];
   scoreLabel?: string;
+  /** For Trending: why the story is placed here, and who is covering it. */
+  why?: string;
+  spectrum?: Spectrum;
 }
 
-const { item, rank, appearances, scoreLabel = 'pts' } = Astro.props;
+const { item, rank, appearances, scoreLabel = 'pts', why, spectrum } = Astro.props;
+const spectrumLabel = spectrum && { both: 'left + right', left: 'left only', right: 'right only' }[spectrum];
 const domain = domainOf(item.url);
 const age = SOURCE_BY_ID.get(item.source)?.undated ? '' : relativeAge(item.publishedAt);
 const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
@@ -52,6 +56,15 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
               </a>
             )}
           </>
+        )
+      }
+      {spectrumLabel && <span class="spectrum">{spectrumLabel}</span>}
+      {
+        why && (
+          <details class="why">
+            <summary>why<span class="sr-only"> this story is here</span></summary>
+            <span>{why}</span>
+          </details>
         )
       }
     </div>

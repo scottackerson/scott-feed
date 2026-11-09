@@ -105,10 +105,13 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 - **FR-11** Trending blends items from all **enabled** sources in the current section.
 - **FR-12** Duplicates are collapsed by **normalized URL**: lowercase host, `www.` removed, tracking parameters (`utm_*`, `ref`, `fbclid`, etc.) removed, trailing slash removed. Stories from different sources are also collapsed when their headlines closely match: at least 4 meaningful words in common, Jaccard similarity of at least 0.5, and published within 48 hours. Two articles from one source are never collapsed. A collapsed item shows a badge for each source it appeared on.
 - **FR-13** Ranking uses a normalized "heat" score:
-  - **Per-source normalization:** each item's native score becomes a percentile within its own source (0–1). Sources without scores (RSS) use recency rank as the percentile.
+  - **Per-source normalization:** each item's native score becomes a percentile within its own source (0–1). Feeds with no scores but a real popularity order (Reddit "hot") use their position. Other feeds are ordered only by time, so they all get a baseline of 0.75. Lists under 10 stories are pulled toward the middle (0.5), so topping a short list counts for less.
   - **Source weight:** 1.0 for scored sources and 0.5 for unscored ones by default. Noisy sources can lower it (Bluesky and Mastodon use 0.4, dev.to 0.6).
   - **Time decay:** `heat = percentile × weight / (1 + age_hours / 12)`. Sources without dates (GitHub Trending) use an assumed age of 12h.
-  - **Cross-source boost:** a story's heat is multiplied by `1 + 0.5 × (sources − 1)`.
+  - **Cross-source boost:** a story's heat is multiplied by `1 + 0.5 × extra`, where `extra` is the coverage beyond its strongest publisher. Feeds from one organization (`Source.publisher`) count once, and social sources count as 0.4.
+  - **Cross-spectrum boost:** a story covered by both left- and right-leaning outlets (`Source.lean`) is multiplied by a further 1.25 and labeled "left + right". A story with at least two outlets on one side and none on the other is labeled "left only" or "right only".
+  - **Publisher cap:** a publisher gets at most 3 solo stories in each 10 ranks. Stories several publishers cover are exempt.
+  - **Explanation:** each Trending row has a "why" disclosure (native `<details>`) stating who covers the story and how it placed.
   - The constants live in a single config module so they can be tuned.
 - **FR-14** Source cards keep each source's **native** ordering by default. A source may offer alternative orders (see `sort.<id>`), chosen per card in the Customize panel's Sort column. The card header then names the order (e.g. "Hacker News · momentum"), its info box explains it, and each order is cached separately.
 
@@ -142,6 +145,7 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 ### 6.5 Failure handling
 
 - **FR-20** A source that fails, times out (3 seconds) or returns garbage never breaks the page. Its card keeps the last good data, with the time of that original fetch, and marks it as not current by turning the card's time red (hovering it names the source that couldn't be reached). There is no notice text. Trending keeps that source's stories and its time turns red too. The top bar's "updated" time is not marked; it shows the most recent successful fetch. The last good data is kept for 7 days in Vercel's Runtime Cache (shared by all function instances, via `@vercel/functions`), so a brand-new instance can still show it. Only a source with no data in that time shows "Unavailable right now". Times older than today also show the date.
+- **FR-20a** After a failed fetch, a source is not contacted again for 5 minutes (per function instance), so a site that is failing or rate-limiting us isn't asked on every render. Its last good data keeps showing meanwhile.
 - **FR-21** Trending is built from whichever sources succeeded.
 
 ### 6.6 PWA
