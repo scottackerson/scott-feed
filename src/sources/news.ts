@@ -54,9 +54,11 @@ export const fox = rssSource({
   id: 'fox',
   name: 'Fox News',
   code: 'FOX',
-  about: 'Fox News is an American cable news network launched in 1996.',
+  about: 'Fox News is an American cable news network launched in 1996. Posts from its betting section are left out of this card.',
   homepage: 'https://www.foxnews.com/',
   feedUrl: 'https://moxie.foxnews.com/google-publisher/latest.xml',
+  // The feed mixes in sportsbook promo-code posts from this section.
+  excludeUrl: /foxnews\.com\/outkick-betting\//,
 });
 
 export const aljazeera = rssSource({

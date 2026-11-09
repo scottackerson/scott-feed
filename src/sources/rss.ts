@@ -22,9 +22,11 @@ export interface RssSourceOptions {
   about: string;
   homepage: string;
   feedUrl: string;
+  /** Drop items whose URL matches, e.g. a publisher's sponsored section. */
+  excludeUrl?: RegExp;
 }
 
-export function rssSource({ id, name, code, about, homepage, feedUrl }: RssSourceOptions): Source {
+export function rssSource({ id, name, code, about, homepage, feedUrl, excludeUrl }: RssSourceOptions): Source {
   return {
     id,
     name,
@@ -33,6 +35,9 @@ export function rssSource({ id, name, code, about, homepage, feedUrl }: RssSourc
     homepage,
     hasScore: false,
     sortDescription: `Newest first, as listed in ${name}'s RSS feed.`,
-    fetch: async () => parseRss(await getText(feedUrl, 'application/rss+xml, application/atom+xml, application/xml'), id),
+    fetch: async () => {
+      const items = parseRss(await getText(feedUrl, 'application/rss+xml, application/atom+xml, application/xml'), id);
+      return excludeUrl ? items.filter((item) => !excludeUrl.test(item.url)) : items;
+    },
   };
 }
