@@ -5,8 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- Topic sections, with tabs in the top bar. Tech stays at `/`, and a new News section is at `/news`. Each section has its own Trending card, and all settings carry across tabs (`cards.<section>` holds a section's card list).
+
 ### Changed
 
+- Trending now merges stories with closely matching headlines from different sources, not just identical URLs.
 - New "Ticker" look: dense, dark-first layout with monospace labels, numbered rows, short source codes and a light variant that follows the system theme. Customize moved into a dropdown in the top bar.
 - Hacker News card now matches the real front-page order (via the official `topstories.json`), falling back to points order.
 

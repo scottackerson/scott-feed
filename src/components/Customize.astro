@@ -1,8 +1,8 @@
 ---
 import { MAX_ITEMS, MIN_ITEMS } from '../lib/config';
-import { countFor, THEMES, type ViewConfig } from '../lib/params';
+import { countFor, offSectionFields, THEMES, type ViewConfig } from '../lib/params';
 import { WINDOWS } from '../lib/time';
-import { ALL_CARDS, SOURCE_BY_ID, TRENDING_ID } from '../sources';
+import { CARD_LAYOUT, SECTION_BY_SLUG, sectionPath, SOURCE_BY_ID, TRENDING_ID } from '../sources';
 
 interface Props {
   cfg: ViewConfig;
@@ -10,15 +10,18 @@ interface Props {
 
 const { cfg } = Astro.props;
 // Shown cards first (in their order), then hidden ones.
-const rows = [...cfg.cards, ...ALL_CARDS.filter((id) => !cfg.cards.includes(id))];
+const sectionCards = CARD_LAYOUT[cfg.section];
+const rows = [...cfg.cards, ...sectionCards.filter((id) => !cfg.cards.includes(id))];
+const path = sectionPath(SECTION_BY_SLUG.get(cfg.section)!);
 const nameOf = (id: string) => (id === TRENDING_ID ? 'Trending' : (SOURCE_BY_ID.get(id)?.name ?? id));
 const sortsOf = (id: string) => SOURCE_BY_ID.get(id)?.sorts;
 ---
 
 <details class="customize">
   <summary>customize</summary>
-  <form method="get" action="/" class="panel">
+  <form method="get" action={path} class="panel">
     <input type="hidden" name="edit" value="1" />
+    {offSectionFields(cfg, CARD_LAYOUT).map(([name, value]) => <input type="hidden" name={name} value={value} />)}
     <p class="hint">
       Settings live in the URL. After saving, bookmark the page to keep your view. No cookies or storage are used.
     </p>
@@ -50,7 +53,7 @@ const sortsOf = (id: string) => SOURCE_BY_ID.get(id)?.sorts;
               </td>
               <td><label for={`show-${id}`}>{nameOf(id)}</label></td>
               <td>
-                <input type="number" name={`o.${id}`} value={i + 1} min="1" max={ALL_CARDS.length} aria-label={`${nameOf(id)} order`} />
+                <input type="number" name={`o.${id}`} value={i + 1} min="1" max={sectionCards.length} aria-label={`${nameOf(id)} order`} />
               </td>
               <td>
                 <input
@@ -82,7 +85,7 @@ const sortsOf = (id: string) => SOURCE_BY_ID.get(id)?.sorts;
     </table>
     <div class="row">
       <button type="submit">Save view</button>
-      <a href="/">Reset to defaults</a>
+      <a href={path}>Reset to defaults</a>
       <button type="button" id="copy-link" hidden>Copy link</button>
     </div>
   </form>

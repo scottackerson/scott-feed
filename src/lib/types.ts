@@ -71,6 +71,20 @@ export interface Source {
   sorts?: { default: { id: string; label: string }; others: SortMode[] };
 }
 
+/** A topic section of the site: a named group of sources with its own page. */
+export interface Section {
+  /** URL path segment, e.g. "news" in `/news`. */
+  slug: string;
+  /** Tab label. */
+  name: string;
+  /** Page `<title>`. */
+  title: string;
+  /** Page meta description. */
+  description: string;
+  /** In default card order. */
+  sources: Source[];
+}
+
 export type SourceStatus = 'ok' | 'stale' | 'error';
 
 /** Result of loading a source through the cache. */
