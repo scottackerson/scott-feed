@@ -102,8 +102,8 @@ The exact subreddit list, Bluesky feed URI and per-source item caps are constant
 
 ### 6.3 Trending card
 
-- **FR-11** Trending blends items from all **enabled** sources.
-- **FR-12** Duplicates are collapsed by **normalized URL**: lowercase host, `www.` removed, tracking parameters (`utm_*`, `ref`, `fbclid`, etc.) removed, trailing slash removed. A collapsed item shows a badge for each source it appeared on.
+- **FR-11** Trending blends items from all **enabled** sources in the current section.
+- **FR-12** Duplicates are collapsed by **normalized URL**: lowercase host, `www.` removed, tracking parameters (`utm_*`, `ref`, `fbclid`, etc.) removed, trailing slash removed. Stories from different sources are also collapsed when their headlines closely match: at least 4 meaningful words in common, Jaccard similarity of at least 0.5, and published within 48 hours. Two articles from one source are never collapsed. A collapsed item shows a badge for each source it appeared on.
 - **FR-13** Ranking uses a normalized "heat" score:
   - **Per-source normalization:** each item's native score becomes a percentile within its own source (0–1). Sources without scores (RSS) use recency rank as the percentile.
   - **Source weight:** 1.0 for scored sources and 0.5 for unscored ones by default. Noisy sources can lower it (Bluesky and Mastodon use 0.4, dev.to 0.6).
@@ -118,7 +118,8 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 
 | Param | Example | Meaning | Default |
 |---|---|---|---|
-| `cards` | `cards=trending,hn,lobsters,github` | Which cards to show, **in this order** | All cards, default order |
+| `cards` | `cards=trending,hn,lobsters,github` | Which Tech cards to show, **in this order** | All cards, default order |
+| `cards.<section>` | `cards.news=trending,npr,bbc` | Which cards to show in another section, in this order | All cards, default order |
 | `n` | `n=20` | Items per card (global) | `20` |
 | `n.<id>` | `n.hn=30&n.trending=40` | Per-card item count override | — |
 | `sort.<id>` | `sort.hn=momentum` | Per-card sort order, for cards that offer one (currently Hacker News: `front` or `momentum`) | the card's default order |
@@ -130,6 +131,12 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 - **FR-17** A **Customize** panel on the page edits these settings. It is a plain HTML `<form method="get">`, so submitting it rewrites the URL with no JavaScript. Ordering uses up/down buttons or a numeric order field. Drag-and-drop may be added as optional JavaScript.
 - **FR-18** Once configured, the user saves their view by bookmarking it. The Customize panel shows a "Copy link" button (optional JavaScript) and a short note explaining this.
 - **FR-19** The parameters are canonicalized (stable key order, defaults omitted) so equivalent views share a URL and a CDN cache entry.
+
+### 6.4a Topic sections
+
+- **FR-19a** The site is divided into topic sections, defined in the registry at `src/sources/index.ts`. The first section (Tech) is at `/`; each other section is at `/<slug>`. `/tech` redirects to `/`, and an unknown path returns 404.
+- **FR-19b** A source can belong to several sections. Each section has its own Trending card, built only from that section's sources, and a page fetches only its own section.
+- **FR-19c** Section tabs carry the whole query string, and the Customize form preserves other sections' settings, so one URL holds the full setup. Tabs appear only when more than one section exists.
 
 ### 6.5 Failure handling
 

@@ -30,6 +30,12 @@ export const TRENDING = {
   crossSourceBoost: 0.5,
   /** Age assumed for items from undated sources. */
   undatedAgeHours: 12,
+  /** Headlines count as the same story with at least this many meaningful words in common… */
+  titleMatchMinWords: 4,
+  /** …and at least this share of their combined words (Jaccard similarity, 0–1)… */
+  titleMatchSimilarity: 0.5,
+  /** …when published within this many hours of each other. */
+  titleMatchMaxHoursApart: 48,
 } as const;
 
 /** Shown behind the Trending card's info button; generated from TRENDING so it stays accurate. */
@@ -37,4 +43,4 @@ export const TRENDING_SORT_DESCRIPTION =
   "Blends the visible cards into one list. Each story's rank within its own source becomes a 0–1 score, " +
   `multiplied by a source weight (${TRENDING.unscoredWeight} for RSS feeds without votes, lower for some noisy sources) ` +
   `and reduced as it ages (a ${TRENDING.decayHours}-hour-old story counts half as much). ` +
-  `Stories on several sources are merged into one entry and get a ${TRENDING.crossSourceBoost * 100}% boost for each extra source.`;
+  `Stories on several sources, with the same link or a closely matching headline, are merged into one entry and get a ${TRENDING.crossSourceBoost * 100}% boost for each extra source.`;

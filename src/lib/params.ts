@@ -11,8 +11,12 @@ const isTheme = (s: string): s is Theme => (THEMES as readonly string[]).include
 
 /** The full view configuration, derived entirely from the URL. */
 export interface ViewConfig {
-  /** Card ids to show, in display order. */
+  /** The section being viewed. */
+  section: string;
+  /** Card ids to show in this section, in display order. */
   cards: string[];
+  /** Customized card lists of the other sections, so they survive tab switches. */
+  otherCards: Record<string, string[]>;
   /** Global items per card. */
   n: number;
   /** Per-card item count overrides. */
@@ -26,6 +30,23 @@ export interface ViewConfig {
 /** For each card with alternative orders: the default mode id and the others. */
 export type SortOptions = Readonly<Record<string, { default: string; others: readonly string[] }>>;
 
+/**
+ * Each section's card ids in default order. The first section is the primary
+ * one and uses the plain `cards` param; the others use `cards.<section>`.
+ * A bare array means a single section.
+ */
+export type CardLayout = Readonly<Record<string, readonly string[]>>;
+
+const toLayout = (cards: readonly string[] | CardLayout): CardLayout =>
+  Array.isArray(cards) ? { '': cards as readonly string[] } : (cards as CardLayout);
+
+const primaryOf = (layout: CardLayout): string => Object.keys(layout)[0];
+const cardsKey = (layout: CardLayout, section: string): string =>
+  section === primaryOf(layout) ? 'cards' : `cards.${section}`;
+/** Every card id across all sections, once each, in layout order. */
+const allIds = (layout: CardLayout): string[] => [...new Set(Object.values(layout).flat())];
+const sameList = (a: readonly string[], b: readonly string[]): boolean => a.join(',') === b.join(',');
+
 function parseCount(v: string | null): number | undefined {
   if (v == null || v.trim() === '') return undefined;
   const n = Number(v);
@@ -33,38 +54,60 @@ function parseCount(v: string | null): number | undefined {
   return Math.min(MAX_ITEMS, Math.max(MIN_ITEMS, Math.round(n)));
 }
 
-export function defaultConfig(allCards: readonly string[]): ViewConfig {
-  return { cards: [...allCards], n: DEFAULT_ITEMS, perCard: {}, window: DEFAULT_WINDOW, theme: DEFAULT_THEME, sort: {} };
+export function defaultConfig(allCards: readonly string[], section = ''): ViewConfig {
+  return {
+    section,
+    cards: [...allCards],
+    otherCards: {},
+    n: DEFAULT_ITEMS,
+    perCard: {},
+    window: DEFAULT_WINDOW,
+    theme: DEFAULT_THEME,
+    sort: {},
+  };
+}
+
+/** A section's card list from the URL, or undefined if absent or entirely invalid. */
+function parseCards(raw: string | null, valid: readonly string[]): string[] | undefined {
+  if (raw == null) return undefined;
+  const allowed = new Set(valid);
+  const seen = new Set<string>();
+  const cards = raw
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter((id) => allowed.has(id) && !seen.has(id) && seen.add(id));
+  return cards.length ? cards : undefined;
 }
 
 /**
  * Parse a view config from URL params. Unknown or invalid values are ignored
  * and fall back to defaults; this never throws.
  *
- * `allCards` is the list of valid card ids in default order; `sorts` lists
- * the cards that have alternative orders (`sort.<id>=<mode>`).
+ * `layout` lists the valid card ids per section (or one list for a single
+ * section); `sorts` lists the cards that have alternative orders
+ * (`sort.<id>=<mode>`). `section` is the section being viewed, defaulting to
+ * the primary one. Settings for every section are parsed, not just this one's.
  */
 export function parseParams(
   params: URLSearchParams,
-  allCards: readonly string[],
+  layout: readonly string[] | CardLayout,
   sorts: SortOptions = {},
+  section?: string,
 ): ViewConfig {
-  const cfg = defaultConfig(allCards);
-  const valid = new Set(allCards);
+  const sections = toLayout(layout);
+  const current = section ?? primaryOf(sections);
+  const cfg = defaultConfig(sections[current], current);
 
-  const cardsParam = params.get('cards');
-  if (cardsParam != null) {
-    const seen = new Set<string>();
-    const cards = cardsParam
-      .split(',')
-      .map((s) => s.trim().toLowerCase())
-      .filter((id) => valid.has(id) && !seen.has(id) && seen.add(id));
-    if (cards.length) cfg.cards = cards;
+  for (const [slug, defaults] of Object.entries(sections)) {
+    const cards = parseCards(params.get(cardsKey(sections, slug)), defaults);
+    if (!cards) continue;
+    if (slug === current) cfg.cards = cards;
+    else if (!sameList(cards, defaults)) cfg.otherCards[slug] = cards;
   }
 
   cfg.n = parseCount(params.get('n')) ?? DEFAULT_ITEMS;
 
-  for (const id of allCards) {
+  for (const id of allIds(sections)) {
     const v = parseCount(params.get(`n.${id}`));
     if (v !== undefined && v !== cfg.n) cfg.perCard[id] = v;
   }
@@ -92,10 +135,12 @@ export function parseParams(
  */
 export function parseForm(
   params: URLSearchParams,
-  allCards: readonly string[],
+  layout: readonly string[] | CardLayout,
   sorts: SortOptions = {},
+  section?: string,
 ): ViewConfig {
-  const base = parseParams(params, allCards, sorts);
+  const base = parseParams(params, layout, sorts, section);
+  const allCards = toLayout(layout)[base.section];
   const valid = new Set(allCards);
   const shown = params.getAll('show').filter((id) => valid.has(id));
   const order = (id: string) => {
@@ -117,18 +162,40 @@ export function countFor(cfg: ViewConfig, id: string): number {
  * omitted. Equivalent views produce identical URLs (one CDN cache entry).
  * Returns "" for the default view.
  */
-export function toQuery(cfg: ViewConfig, allCards: readonly string[]): string {
+export function toQuery(cfg: ViewConfig, layout: readonly string[] | CardLayout): string {
+  const sections = toLayout(layout);
+  const ids = allIds(sections);
   const parts: string[] = [];
-  if (cfg.cards.join(',') !== allCards.join(',')) parts.push(`cards=${cfg.cards.join(',')}`);
+  for (const [slug, defaults] of Object.entries(sections)) {
+    const cards = slug === cfg.section ? cfg.cards : cfg.otherCards[slug];
+    if (cards && !sameList(cards, defaults)) parts.push(`${cardsKey(sections, slug)}=${cards.join(',')}`);
+  }
   if (cfg.n !== DEFAULT_ITEMS) parts.push(`n=${cfg.n}`);
   if (cfg.window !== DEFAULT_WINDOW) parts.push(`window=${cfg.window}`);
   if (cfg.theme !== DEFAULT_THEME) parts.push(`theme=${cfg.theme}`);
-  for (const id of allCards) {
+  for (const id of ids) {
     const v = cfg.perCard[id];
     if (v !== undefined && v !== cfg.n) parts.push(`n.${id}=${v}`);
   }
-  for (const id of allCards) {
+  for (const id of ids) {
     if (cfg.sort[id]) parts.push(`sort.${id}=${cfg.sort[id]}`);
   }
   return parts.join('&');
+}
+
+/**
+ * Settings for other sections, as hidden form fields. The Customize form only
+ * has inputs for the section being viewed, so without these a save would lose
+ * everything else in the URL.
+ */
+export function offSectionFields(cfg: ViewConfig, layout: CardLayout): [string, string][] {
+  const here = new Set(layout[cfg.section]);
+  const fields: [string, string][] = [];
+  for (const [slug, cards] of Object.entries(cfg.otherCards)) fields.push([cardsKey(layout, slug), cards.join(',')]);
+  for (const id of allIds(layout)) {
+    if (here.has(id)) continue;
+    if (cfg.perCard[id] !== undefined) fields.push([`n.${id}`, String(cfg.perCard[id])]);
+    if (cfg.sort[id]) fields.push([`sort.${id}`, cfg.sort[id]]);
+  }
+  return fields;
 }

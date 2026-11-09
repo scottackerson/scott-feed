@@ -103,6 +103,11 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .top h1 a:hover { text-decoration: none; }
 .caret { color: var(--accent-text); }
 
+.sections { display: flex; gap: 2px; flex: none; }
+.sections a { font: 700 12px/1 var(--mono); color: var(--muted); padding: 8px 10px; border-radius: 4px; white-space: nowrap; }
+.sections a:hover { color: var(--text); background: var(--control); text-decoration: none; }
+.sections a[aria-current='page'] { color: var(--accent-text); }
+
 .chips {
   display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none;
   flex: 1 1 300px; min-width: 0; /* min-width:0 lets it shrink and scroll instead of widening the page */
@@ -235,6 +240,10 @@ footer a { text-decoration: underline; }
   .panel th, .panel td { padding: 6px 3px; }
   .panel input[type='number'] { width: 3.4em; }
   .panel select { max-width: 6.5em; }
+  /* Tabs share the title row, scrolling sideways, so the sticky header doesn't grow. */
+  .sections { flex: 1 1 0; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .sections::-webkit-scrollbar { display: none; }
+  .customize { flex: none; }
   .chips { order: 3; flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
   .chips a { padding: 10px 12px; background: var(--control); }
 

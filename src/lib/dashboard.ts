@@ -3,7 +3,7 @@ import { countFor, type ViewConfig } from './params';
 import { ageHours, WINDOWS } from './time';
 import { buildTrending } from './trending';
 import type { Item, Source, SourceResult, TrendingItem } from './types';
-import { SOURCE_BY_ID, SOURCES, TRENDING_ID } from '../sources';
+import { SECTION_BY_SLUG, SOURCE_BY_ID, TRENDING_ID } from '../sources';
 
 export type CardData =
   | {
@@ -22,8 +22,8 @@ export async function loadDashboard(cfg: ViewConfig, now = Date.now()): Promise<
   const shownSources = cfg.cards.filter((id) => id !== TRENDING_ID);
   const wantsTrending = cfg.cards.includes(TRENDING_ID);
 
-  // Trending blends the visible sources, or all sources if it's shown alone.
-  const trendingIds = shownSources.length ? shownSources : SOURCES.map((s) => s.id);
+  // Trending blends the visible sources, or the whole section if it's shown alone.
+  const trendingIds = shownSources.length ? shownSources : (SECTION_BY_SLUG.get(cfg.section)?.sources ?? []).map((s) => s.id);
   const needed = new Set([...shownSources, ...(wantsTrending ? trendingIds : [])]);
 
   const results = new Map<string, SourceResult>();
