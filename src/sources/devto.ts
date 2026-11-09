@@ -35,6 +35,7 @@ const source: Source = {
     "dev.to is a community blogging platform for software developers, built on the open-source Forem software. Its articles are written by members.",
   homepage: 'https://dev.to/top/day',
   hasScore: true,
+  social: true,
   scoreLabel: 'reactions',
   sortDescription: "dev.to's \"top of the day\" ranking of articles from the last 24 hours.",
   // Every article is from the last day, so it would otherwise crowd Trending.

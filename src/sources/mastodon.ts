@@ -32,6 +32,7 @@ const source: Source = {
     "Mastodon is a decentralized, open-source social network made up of independently run servers, part of the wider \"fediverse\". This card shows links trending on mastodon.social, its largest server.",
   homepage: 'https://mastodon.social/explore/links',
   hasScore: true,
+  social: true,
   scoreLabel: 'shares',
   sortDescription: "mastodon.social's trending links, ranked by how widely each link is being shared across the fediverse. Not limited to tech.",
   // Fediverse trends skew toward general news, not just tech.
