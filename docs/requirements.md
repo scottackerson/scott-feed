@@ -33,7 +33,7 @@ The app holds **no state**: no accounts, cookies, local storage or database. All
 - Thumbnails, images, AI summaries.
 - Save-for-later and read-state tracking. The browser's native `:visited` link styling is used instead, which needs no storage.
 - Offline mode.
-- Third-party analytics or tracking scripts (first-party, cookieless Vercel Web Analytics is allowed; see NFR-5).
+- Third-party analytics or tracking scripts, except the two cookieless analytics tools allowed by NFR-5 (Vercel Web Analytics and Umami Cloud).
 
 ## 4. Users
 
@@ -178,7 +178,10 @@ The URL is the only configuration. There are no cookies or storage. If parameter
 
 ### 7.3 Privacy
 
-- **NFR-5** No cookies, no client-side storage, no third-party scripts or embeds. The one exception to "no analytics" is **Vercel Web Analytics**: cookieless, anonymous page-view counts, added with the `@vercel/analytics` Astro component and loaded from the site's own domain (`/_vercel/insights/*`) in production builds only. Scripts must never be inlined, because the CSP blocks inline scripts.
+- **NFR-5** No cookies, no client-side storage, no third-party scripts or embeds, with two cookieless analytics exceptions. Both load in production builds only:
+  - **Vercel Web Analytics** for page views and Web Vitals. It is added with the `@vercel/analytics` Astro component and loaded from the site's own domain (`/_vercel/insights/*`).
+  - **Umami Cloud** for unique visitors, referrers, country/region/city and click events. Its script and event endpoint are on `https://cloud.umami.is`, which is the only third-party origin in the CSP (`script-src` and `connect-src`). It is loaded directly rather than proxied through this domain, so Umami sees the visitor's real IP for location and visitor counts. Umami does not store IPs. The website ID is in `src/lib/config.ts` (it is public), and the script is added only when `VERCEL_ENV` is `production`, so preview deployments aren't counted. Click events (`story-click`, `discussion-click`) send only the section, card ID, source ID and rank, never titles or URLs. The Umami script reads one `localStorage` key (`umami.disabled`, an owner opt-out) but writes nothing.
+  - Scripts must never be inlined, because the CSP blocks inline scripts.
 - **NFR-6** No user data is collected or logged beyond Vercel's default request logs.
 
 ### 7.4 Accessibility

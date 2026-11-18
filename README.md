@@ -4,8 +4,8 @@ A fast, cookie-free dashboard of what's trending, organized into topic sections:
 
 - **One card per source**, plus a **Trending** card per section that blends and dedupes the hottest stories in that section.
 - **Stateless.** No accounts, cookies or local storage. Your configuration lives in the URL, so just bookmark it.
-- **Private.** No cookies or personal data. The only analytics is Vercel Web Analytics: anonymous, cookieless page-view counts served from the site's own domain.
-- **Light.** Server-rendered, works without JavaScript, under 15 KB of client JS, zero third-party requests.
+- **Private.** No cookies or personal data. Analytics are cookieless and anonymous: Vercel Web Analytics for page views, and [Umami Cloud](https://umami.is) for unique visitors, referrers, location and which stories get clicked. Umami never stores IP addresses.
+- **Light.** Server-rendered, works without JavaScript, under 15 KB of first-party client JS. The only third-party request is Umami's analytics script.
 - **Mobile-friendly.** Swipe between cards, and add it to your home screen.
 
 > 🚧 Status: in development. See the [requirements](docs/requirements.md).

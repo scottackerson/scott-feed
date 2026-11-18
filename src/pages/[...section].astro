@@ -2,7 +2,7 @@
 import Analytics from '@vercel/analytics/astro';
 import Card from '../components/Card.astro';
 import Customize from '../components/Customize.astro';
-import { PAGE_CACHE_CONTROL } from '../lib/config';
+import { PAGE_CACHE_CONTROL, UMAMI_WEBSITE_ID } from '../lib/config';
 import { loadDashboard } from '../lib/dashboard';
 import { parseForm, parseParams, toQuery } from '../lib/params';
 import { clockUtc } from '../lib/time';
@@ -39,6 +39,10 @@ const times = cards
   .map((c) => (c.kind === 'trending' ? c.fetchedAt : c.result.fetchedAt))
   .filter((t): t is number => t !== undefined);
 const latest = times.length ? Math.max(...times) : undefined;
+
+// Umami Cloud analytics (NFR-5): production deployment only, so preview
+// deployments and local builds aren't counted. VERCEL_ENV is set by Vercel at runtime.
+const umami = import.meta.env.PROD && process.env.VERCEL_ENV === 'production';
 ---
 
 <!doctype html>
@@ -74,6 +78,17 @@ const latest = times.length ? Math.max(...times) : undefined;
        */
       import.meta.env.PROD && <Analytics />
     }
+    {
+      /*
+       * Umami Cloud: cookieless visitor, referrer and location stats, plus
+       * click events from data-umami-event attributes. Loaded straight from
+       * cloud.umami.is (allowed in the CSP) so it sees the visitor's real IP;
+       * a proxy through this domain would make every visitor look like Vercel.
+       */
+      umami && (
+        <script defer is:inline src="https://cloud.umami.is/script.js" data-website-id={UMAMI_WEBSITE_ID} data-host-url="https://cloud.umami.is"></script>
+      )
+    }
   </head>
   <body>
     <header class="top">
@@ -103,10 +118,10 @@ const latest = times.length ? Math.max(...times) : undefined;
       <Customize cfg={cfg} />
     </header>
     <main class="cards">
-      {cards.map((card) => <Card card={card} />)}
+      {cards.map((card) => <Card card={card} section={section.slug} />)}
     </main>
     <footer>
-      {section.sources.length} sources · no cookies · anonymous page-view stats only ·
+      {section.sources.length} sources · no cookies · anonymous usage stats only ·
       <a href="https://github.com/scottackerson/scott-feed" target="_blank" rel="noopener noreferrer">github</a>
     </footer>
   </body>

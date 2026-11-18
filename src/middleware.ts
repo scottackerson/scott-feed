@@ -1,12 +1,15 @@
 import { defineMiddleware } from 'astro:middleware';
 
+/** Umami Cloud analytics: its script and its event endpoint (NFR-5). */
+const UMAMI = 'https://cloud.umami.is';
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'",
+  `script-src 'self' ${UMAMI}`,
   // Astro may inline small stylesheets.
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
-  "connect-src 'self'",
+  `connect-src 'self' ${UMAMI}`,
   "base-uri 'none'",
   "form-action 'self'",
   "frame-ancestors 'none'",

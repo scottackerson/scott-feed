@@ -13,6 +13,12 @@ export const FAILURE_COOLDOWN_MS = 5 * 60 * 1000;
 export const SHARED_CACHE_TIMEOUT_MS = 300;
 
 /** CDN cache header for rendered pages. */
+/**
+ * Umami Cloud website ID (NFR-5). Not a secret: it appears in every page's HTML.
+ * The script is only added on Vercel's production deployment.
+ */
+export const UMAMI_WEBSITE_ID = 'a92fef15-d961-4b3c-bf8a-9fc195dcf000';
+
 export const PAGE_CACHE_CONTROL = 'public, max-age=0, s-maxage=600, stale-while-revalidate=3600';
 
 /** Items per card. */

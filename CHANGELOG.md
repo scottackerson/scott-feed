@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Umami Cloud analytics (cookieless) for unique visitors, referrers, location and story/discussion click events. It loads from `cloud.umami.is`, which is now allowed in the CSP, and only on the production deployment (`VERCEL_ENV=production`).
 - Topic sections, with tabs in the top bar. Tech stays at `/`, with new sections at `/news`, `/politics`, `/healthcare`, `/sports` and `/3d-printing`. Each section has its own Trending card, and all settings carry across tabs (`cards.<section>` holds a section's card list).
 
 ### Changed
