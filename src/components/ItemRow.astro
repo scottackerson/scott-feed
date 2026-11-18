@@ -7,6 +7,9 @@ import { SOURCE_BY_ID } from '../sources';
 interface Props {
   item: Item;
   rank: number;
+  /** Section slug and card ID, sent with Umami click events. */
+  section: string;
+  cardId: string;
   /** For Trending: every source this story appeared on. */
   appearances?: Item[];
   scoreLabel?: string;
@@ -15,7 +18,14 @@ interface Props {
   spectrum?: Spectrum;
 }
 
-const { item, rank, appearances, scoreLabel = 'pts', why, spectrum } = Astro.props;
+const { item, rank, section, cardId, appearances, scoreLabel = 'pts', why, spectrum } = Astro.props;
+// Umami click-event attributes (NFR-5). Only these fields are sent; never titles or URLs.
+const track = (event: string, source: string) => ({
+  'data-umami-event': event,
+  'data-umami-event-section': section,
+  'data-umami-event-card': cardId,
+  'data-umami-event-source': source,
+});
 const spectrumLabel = spectrum && { both: 'left + right', left: 'left only', right: 'right only' }[spectrum];
 const domain = domainOf(item.url);
 const age = SOURCE_BY_ID.get(item.source)?.undated ? '' : relativeAge(item.publishedAt);
@@ -25,7 +35,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
 <li class="item">
   <span class="rank" aria-hidden="true">{String(rank).padStart(2, '0')}</span>
   <div class="body">
-    <a class="title" href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
+    <a class="title" href={item.url} target="_blank" rel="noopener noreferrer" title={item.title} {...track('story-click', item.source)} data-umami-event-rank={rank}>
       {item.title}<span class="sr-only"> (opens in new tab)</span>
     </a>
     <div class="meta">
@@ -38,7 +48,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
               const src = SOURCE_BY_ID.get(a.source);
               const code = src?.code ?? a.source;
               return a.discussionUrl ? (
-                <a class="badge" href={a.discussionUrl} target="_blank" rel="noopener noreferrer" title={`Discussion on ${src?.name}`}>
+                <a class="badge" href={a.discussionUrl} target="_blank" rel="noopener noreferrer" title={`Discussion on ${src?.name}`} {...track('discussion-click', a.source)}>
                   [{code}]<span class="sr-only"> {src?.name} discussion (opens in new tab)</span>
                 </a>
               ) : (
@@ -50,7 +60,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word
           <>
             {item.score !== undefined && <span>{item.score.toLocaleString('en-US')} {scoreLabel}</span>}
             {item.discussionUrl && (
-              <a href={item.discussionUrl} target="_blank" rel="noopener noreferrer">
+              <a href={item.discussionUrl} target="_blank" rel="noopener noreferrer" {...track('discussion-click', item.source)}>
                 {item.comments !== undefined ? plural(item.comments, 'comment') : 'discuss'}
                 <span class="sr-only"> (opens in new tab)</span>
               </a>

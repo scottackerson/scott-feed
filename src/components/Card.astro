@@ -6,9 +6,11 @@ import ItemRow from './ItemRow.astro';
 
 interface Props {
   card: CardData;
+  /** Section slug, for analytics click events. */
+  section: string;
 }
 
-const { card } = Astro.props;
+const { card, section } = Astro.props;
 const isTrending = card.kind === 'trending';
 const name = isTrending ? 'Trending' : card.result.source.name;
 const homepage = isTrending ? undefined : card.result.source.homepage;
@@ -68,8 +70,8 @@ const headingId = `h-${card.id}`;
     card.items.length ? (
       <ol>
         {card.kind === 'trending'
-          ? card.items.map((t, i) => <ItemRow item={t.item} rank={i + 1} appearances={t.appearances} why={t.why} spectrum={t.spectrum} />)
-          : card.items.map((it, i) => <ItemRow item={it} rank={i + 1} scoreLabel={card.result.source.scoreLabel} />)}
+          ? card.items.map((t, i) => <ItemRow item={t.item} rank={i + 1} section={section} cardId={card.id} appearances={t.appearances} why={t.why} spectrum={t.spectrum} />)
+          : card.items.map((it, i) => <ItemRow item={it} rank={i + 1} section={section} cardId={card.id} scoreLabel={card.result.source.scoreLabel} />)}
       </ol>
     ) : (
       <p class="notice">{status === 'error' ? 'Unavailable right now.' : 'Nothing in this time window.'}</p>
